@@ -179,6 +179,18 @@ body{
 .profile-stat{padding:10px;border:1px solid var(--line);border-radius:12px;background:rgba(7,14,24,.55);}
 .profile-stat b{display:block;color:#dff5ff;font-size:16px;}
 .profile-stat span{color:var(--dim);font-size:10px;}
+.rank-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;padding:0 3px;}
+.rank-head-title{font-size:12px;color:#cbd5e1;font-weight:800;}
+.rank-refresh{padding:7px 9px;border:1px solid rgba(125,211,252,.22);border-radius:9px;background:rgba(56,189,248,.08);color:#bae6fd;font:800 11px inherit;cursor:pointer;}
+.rank-refresh:disabled{opacity:.55;cursor:default;}
+.rank-row{display:grid;grid-template-columns:30px 1fr auto;align-items:center;gap:9px;padding:10px 11px;border:1px solid var(--line);border-radius:13px;background:linear-gradient(180deg,rgba(20,29,43,.98),rgba(13,18,28,.98));}
+.rank-row.me{border-color:#fbbf24;background:linear-gradient(135deg,rgba(91,61,20,.55),rgba(16,24,36,.95));}
+.rank-place{font-size:14px;font-weight:900;color:#94a3b8;text-align:center;}
+.rank-row:nth-child(2) .rank-place{color:#f8d36a;}.rank-row:nth-child(3) .rank-place{color:#cbd5e1;}.rank-row:nth-child(4) .rank-place{color:#d99a61;}
+.rank-name{font-size:13px;font-weight:800;color:#eef2f7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rank-meta{margin-top:2px;color:var(--dim);font-size:10.5px;}
+.rank-score{text-align:right;color:#ffd166;font-size:12px;font-weight:900;white-space:nowrap;}
+.rank-note{padding:18px 12px;text-align:center;color:var(--dim);font-size:12px;line-height:1.45;border:1px dashed var(--line);border-radius:13px;}
 
 /* ---------- Статистика ---------- */
 .stats{
@@ -757,7 +769,7 @@ body{
 /* ---------- Табы ---------- */
 .tabs{
   display:grid;
-  grid-template-columns:repeat(5,minmax(0,1fr));
+  grid-template-columns:repeat(6,minmax(0,1fr));
   gap:5px;
   margin-bottom:10px;
 }
@@ -1474,6 +1486,7 @@ body{
     <button class="tab pod-tab locked" data-tab="pods" id="podsTab">💨 Подики 🔒</button>
     <button class="tab hookah-tab locked" data-tab="hookahs" id="hookahsTab">🫧 Кальяны 🔒</button>
     <button class="tab" data-tab="ach">🏆 Награды</button>
+    <button class="tab" data-tab="rank">📊 Рейтинг</button>
   </div>
 
   <div class="list" id="shopList"></div>
@@ -1481,6 +1494,7 @@ body{
   <div class="list hidden" id="podList"></div>
   <div class="list hidden" id="hookahList"></div>
   <div class="list hidden" id="achList"></div>
+  <div class="list hidden" id="rankList"></div>
 
   <div class="footer">
     <button id="resetBtn">Сбросить прогресс</button>
@@ -1893,6 +1907,64 @@ async function initSupabase(){
   }
 }
 
+async function loadLeaderboard(){
+  if(!rankList) return;
+  rankList.innerHTML = '<div class="rank-note">Загружаю рейтинг…</div>';
+  if(!supabaseClient){
+    rankList.innerHTML = '<div class="rank-note">Рейтинг доступен после подключения Supabase.</div>';
+    return;
+  }
+
+  const head = document.createElement('div');
+  head.className = 'rank-head';
+  head.innerHTML = '<span class="rank-head-title">ТОП ИГРОКОВ · по заработку</span>';
+  const refresh = document.createElement('button');
+  refresh.className = 'rank-refresh';
+  refresh.textContent = 'Обновить ↻';
+  refresh.addEventListener('click', loadLeaderboard);
+  head.appendChild(refresh);
+  rankList.innerHTML = '';
+  rankList.appendChild(head);
+
+  const { data:{ user } } = await supabaseClient.auth.getUser();
+  const { data, error } = await supabaseClient.from('leaderboard').select('*').order('total_earned', { ascending:false }).limit(100);
+  if(error){
+    const note = document.createElement('div');
+    note.className = 'rank-note';
+    note.textContent = `Не удалось загрузить рейтинг: ${error.message}`;
+    rankList.appendChild(note);
+    return;
+  }
+  if(!data?.length){
+    const note = document.createElement('div');
+    note.className = 'rank-note';
+    note.textContent = 'Пока нет игроков. Стань первым в рейтинге!';
+    rankList.appendChild(note);
+    return;
+  }
+
+  data.forEach((player, index) => {
+    const row = document.createElement('div');
+    row.className = 'rank-row' + (user && player.player_id === user.id ? ' me' : '');
+    const place = document.createElement('div');
+    place.className = 'rank-place';
+    place.textContent = String(index + 1);
+    const info = document.createElement('div');
+    const name = document.createElement('div');
+    name.className = 'rank-name';
+    name.textContent = player.nickname || 'Игрок';
+    const meta = document.createElement('div');
+    meta.className = 'rank-meta';
+    meta.textContent = `Ур. ${Math.max(1, player.level || 1)} · ${fmt(player.smoked || 0)} сигарет · ${player.achievements || 0} достижений`;
+    info.appendChild(name); info.appendChild(meta);
+    const score = document.createElement('div');
+    score.className = 'rank-score';
+    score.textContent = `${fmt(player.total_earned || 0)} 🪙`;
+    row.appendChild(place); row.appendChild(info); row.appendChild(score);
+    rankList.appendChild(row);
+  });
+}
+
 function load(){
   try{
     const raw = localStorage.getItem(SAVE_KEY);
@@ -2151,6 +2223,7 @@ const hookahEl       = document.getElementById('hookahEl');
 const hookahCoalZone = document.getElementById('hookahCoalZone');
 const hookahWaterBar = document.getElementById('hookahWaterBar');
 const hookahList     = document.getElementById('hookahList');
+const rankList       = document.getElementById('rankList');
 const podsTab        = document.getElementById('podsTab');
 const hookahsTab     = document.getElementById('hookahsTab');
 const levelPillEl    = document.getElementById('levelPill');
@@ -3717,7 +3790,7 @@ function buzz(ms){
 /* =========================================================
    ТАБЫ
    ========================================================= */
-const PANELS = { shop: shopList, brands: brandList, pods: podList, hookahs: hookahList, ach: achList };
+const PANELS = { shop: shopList, brands: brandList, pods: podList, hookahs: hookahList, ach: achList, rank: rankList };
 
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
@@ -3742,6 +3815,7 @@ document.querySelectorAll('.tab').forEach(tab => {
     }
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t === tab));
     Object.keys(PANELS).forEach(k => PANELS[k].classList.toggle('hidden', k !== key));
+    if(key === 'rank') loadLeaderboard();
   });
 });
 
