@@ -3357,7 +3357,7 @@ function checkPipeLevelUnlock(){
    ПОКУПКИ
    ========================================================= */
 function buyUpgrade(id, mode){
-  const list = mode === 'hookahs' ? HOOKAH_UPGRADES : (mode === 'pods' ? POD_UPGRADES : CIG_UPGRADES);
+  const list = mode === 'pipes' ? PIPE_UPGRADES : (mode === 'hookahs' ? HOOKAH_UPGRADES : (mode === 'pods' ? POD_UPGRADES : CIG_UPGRADES));
   const u = list.find(x => x.id === id);
   if(!u) return;
 
@@ -3374,7 +3374,10 @@ function buyUpgrade(id, mode){
   if(u.max && lvl >= u.max) return;
 
   const cost = u.cost(lvl);
-  if(mode === 'hookahs'){
+  if(mode === 'pipes'){
+    if(state.pipeCoins < cost) return;
+    state.pipeCoins -= cost;
+  } else if(mode === 'hookahs'){
     if(state.hookahCoins < cost) return;
     state.hookahCoins -= cost;
   } else if(mode === 'pods'){
