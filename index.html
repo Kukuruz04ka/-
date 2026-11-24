@@ -1843,14 +1843,14 @@ async function syncRemoteProfile(){
     const { error: profileError } = await supabaseClient.from('profiles').upsert({
       id:user.id, nickname:snap.nickname, updated_at:new Date().toISOString()
     }, { onConflict:'id' });
-    if(profileError) throw profileError;
+    if(profileError) throw new Error(`profiles: ${profileError.message}`);
     const { error: statsError } = await supabaseClient.from('player_stats').upsert({
       player_id:user.id, level:snap.level, xp:snap.xp, total_xp:snap.total_xp,
       coins:snap.coins, total_earned:snap.total_earned, smoked:snap.smoked,
       crits:snap.crits, achievements:snap.achievements, pod_puffs:snap.pod_puffs,
       hookah_puffs:snap.hookah_puffs, mode:snap.mode, updated_at:new Date().toISOString()
     }, { onConflict:'player_id' });
-    if(statsError) throw statsError;
+    if(statsError) throw new Error(`player_stats: ${statsError.message}`);
     if(profileStatusEl) profileStatusEl.textContent = 'Синхронизировано с Supabase';
   }catch(error){
     if(profileStatusEl) profileStatusEl.textContent = 'Онлайн-синхронизация недоступна · локально сохранено';
@@ -1881,7 +1881,7 @@ async function initSupabase(){
     }
   }catch(error){
     supabaseClient = null;
-    if(profileStatusEl) profileStatusEl.textContent = 'Supabase не подключён · локально сохранено';
+    if(profileStatusEl) profileStatusEl.textContent = `Ошибка Supabase: ${String(error.message || error).slice(0, 90)}`;
     console.warn('Supabase init failed:', error);
   }
 }
