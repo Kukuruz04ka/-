@@ -124,6 +124,9 @@ body{
   transition:.15s ease;
 }
 .level-open:hover,.level-open:active{background:rgba(255,209,102,.1);border-color:rgba(255,209,102,.45);color:#ffe39a;}
+.prestige-open{margin-top:6px;width:100%;padding:8px 10px;border:1px solid rgba(192,132,252,.28);border-radius:9px;background:rgba(168,85,247,.08);color:#e9d5ff;font:800 11px/1.2 inherit;cursor:pointer;transition:.15s ease;}
+.prestige-open:hover:not(:disabled){background:rgba(168,85,247,.18);border-color:#c084fc;}
+.prestige-open:disabled{opacity:.52;cursor:default;}
 
 /* ---------- Меню пути уровней ---------- */
 .level-modal{
@@ -1405,6 +1408,7 @@ body{
     </div>
     <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
     <button class="level-open" id="levelOpenBtn">Открыть путь уровней ↗</button>
+    <button class="prestige-open" id="prestigeBtn" disabled>Престиж доступен с 25 уровня</button>
   </div>
 
   <div class="stats">
@@ -1798,6 +1802,7 @@ const DEFAULT_STATE = {
   level: 1,
   xp: 0,
   totalXp: 0,
+  prestige: 0,
 
   profileName: 'Игрок',
 
@@ -1810,6 +1815,8 @@ function profileSnapshot(){
   return {
     nickname: String(state.profileName || 'Игрок').trim().slice(0,24) || 'Игрок',
     level: Math.max(1, Math.floor(state.level || 1)),
+    prestige: Math.max(0, Math.floor(state.prestige || 0)),
+    rating_score: prestigeRating(),
     xp: Math.floor(state.xp || 0),
     total_xp: Math.floor(state.totalXp || 0),
     coins: Math.floor(state.coins || 0),
@@ -1829,6 +1836,8 @@ function renderProfile(){
   profileStatsEl.innerHTML = '';
   [
     ['Уровень', snap.level],
+    ['Престиж', snap.prestige],
+    ['Рейтинг', fmt(snap.rating_score)],
     ['Общий XP', fmt(snap.total_xp)],
     ['Сигареты', fmt(snap.smoked)],
     ['Монеты заработаны', fmt(snap.total_earned)],
@@ -1859,7 +1868,7 @@ async function syncRemoteProfile(){
     }, { onConflict:'id' });
     if(profileError) throw new Error(`profiles: ${profileError.message}`);
     const { error: statsError } = await supabaseClient.from('player_stats').upsert({
-      player_id:user.id, level:snap.level, xp:snap.xp, total_xp:snap.total_xp,
+    player_id:user.id, level:snap.level, prestige:snap.prestige, xp:snap.xp, total_xp:snap.total_xp,
       coins:snap.coins, total_earned:snap.total_earned, smoked:snap.smoked,
       crits:snap.crits, achievements:snap.achievements, pod_puffs:snap.pod_puffs,
       hookah_puffs:snap.hookah_puffs, mode:snap.mode, updated_at:new Date().toISOString()
@@ -1917,7 +1926,7 @@ async function loadLeaderboard(){
 
   const head = document.createElement('div');
   head.className = 'rank-head';
-  head.innerHTML = '<span class="rank-head-title">ТОП ИГРОКОВ · по заработку</span>';
+  head.innerHTML = '<span class="rank-head-title">ТОП ИГРОКОВ · престиж + уровень</span>';
   const refresh = document.createElement('button');
   refresh.className = 'rank-refresh';
   refresh.textContent = 'Обновить ↻';
@@ -1927,7 +1936,7 @@ async function loadLeaderboard(){
   rankList.appendChild(head);
 
   const { data:{ user } } = await supabaseClient.auth.getUser();
-  const { data, error } = await supabaseClient.from('leaderboard').select('*').order('total_earned', { ascending:false }).limit(100);
+  const { data, error } = await supabaseClient.from('leaderboard').select('*').order('rating_score', { ascending:false }).limit(100);
   if(error){
     const note = document.createElement('div');
     note.className = 'rank-note';
@@ -1955,11 +1964,11 @@ async function loadLeaderboard(){
     name.textContent = player.nickname || 'Игрок';
     const meta = document.createElement('div');
     meta.className = 'rank-meta';
-    meta.textContent = `Ур. ${Math.max(1, player.level || 1)} · ${fmt(player.smoked || 0)} сигарет · ${player.achievements || 0} достижений`;
+    meta.textContent = `Престиж ${player.prestige || 0} · Ур. ${Math.max(1, player.level || 1)} · ${player.achievements || 0} достижений`;
     info.appendChild(name); info.appendChild(meta);
     const score = document.createElement('div');
     score.className = 'rank-score';
-    score.textContent = `${fmt(player.total_earned || 0)} 🪙`;
+    score.textContent = `${fmt(player.rating_score || 0)} RP`;
     row.appendChild(place); row.appendChild(info); row.appendChild(score);
     rankList.appendChild(row);
   });
@@ -1978,7 +1987,7 @@ function load(){
     const numericKeys = [
       'coins','smoked','totalEarned','crits','speed','tapPower','batch','pullSpeed','auto','mult','crit','discount',
       'podCoins','podPuffs','podJuice','podCoil','podTank','podAirflow','podTap','podAuto','podNicotine',
-      'hookahCoins','hookahPuffs','hookahCoals','hookahBowl','hookahCoalCap','hookahDraft','hookahTap','hookahAuto','hookahMix'
+      'hookahCoins','hookahPuffs','hookahCoals','hookahBowl','hookahCoalCap','hookahDraft','hookahTap','hookahAuto','hookahMix','prestige'
     ];
     numericKeys.forEach(key => {
       const value = Number(merged[key]);
@@ -2035,7 +2044,8 @@ const LEVEL_TIERS = [
 ];
 
 function xpNeededForLevel(lvl){
-  return Math.floor(25 * Math.pow(1.28, Math.max(0, lvl - 1)));
+  const prestigeSlowdown = 1 + 0.08 * Math.max(0, state.prestige || 0);
+  return Math.floor(25 * Math.pow(1.28, Math.max(0, lvl - 1)) * prestigeSlowdown);
 }
 
 function getLevelTitle(lvl){
@@ -2116,6 +2126,47 @@ function updateLevelUI(){
   xpTextEl.textContent = `${fmt(cur)} / ${fmt(req)} XP`;
   xpPctEl.textContent = `${Math.floor(pct)}%`;
   xpFillEl.style.width = `${pct.toFixed(1)}%`;
+  if(prestigeBtn){
+    const ready = lvl >= 25;
+    prestigeBtn.disabled = !ready;
+    prestigeBtn.textContent = ready
+      ? `✨ Сделать престиж ${Math.max(1, state.prestige + 1)} · бонус +${Math.round(state.prestige * 12 + 12)}% к доходу`
+      : `Престиж доступен с 25 уровня · ${lvl}/25`;
+  }
+}
+
+function prestigeReset(){
+  if((state.level || 1) < 25) return;
+  if(!confirm(`Сбросить текущий прогресс и получить престиж ${state.prestige + 1}?\n\nСохранятся достижения, профиль и общая статистика. Доход навсегда увеличится на ${Math.round((state.prestige + 1) * 12)}%.`)) return;
+
+  const preserved = {
+    profileName: state.profileName || 'Игрок',
+    prestige: Math.max(0, state.prestige || 0) + 1,
+    totalXp: Math.max(0, state.totalXp || 0),
+    totalEarned: Math.max(0, state.totalEarned || 0),
+    smoked: Math.max(0, state.smoked || 0),
+    crits: Math.max(0, state.crits || 0),
+    ach: Array.isArray(state.ach) ? [...state.ach] : []
+  };
+  state = Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), preserved);
+
+  progress = 0;
+  autoAcc = 0;
+  phase = 'smoke';
+  phaseTime = 0;
+  visualFrac = 1;
+  cigOffsetX = 0; cigOffsetY = 0; cigRotate = 0;
+  cigScaleX = 1; cigScaleY = 1; cigOpacity = 1;
+  cigBurnout = false; cigNoEmber = false;
+  packProp.classList.remove('visible');
+  particles.length = 0; flames.length = 0; smokeRings.length = 0; sparks.length = 0;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'shop'));
+  Object.keys(PANELS).forEach(k => PANELS[k].classList.toggle('hidden', k !== 'shop'));
+  buildShop('cigs');
+  applyModeVisual(); applySkins(); applyHookahSkin(); measure();
+  showToast({icon:'✨', name:`Престиж ${state.prestige} получен!`, desc:`Доход навсегда увеличен на ${Math.round(state.prestige * 12)}% · рейтинг ${prestigeRating()} RP`, reward:0});
+  save();
+  updateUI();
 }
 
 function save(){
@@ -2130,6 +2181,8 @@ function save(){
    ПРОИЗВОДНЫЕ ЗНАЧЕНИЯ
    ========================================================= */
 const CRIT_MUL = 5;
+const prestigeIncomeMul = () => 1 + 0.12 * Math.max(0, state.prestige || 0);
+const prestigeRating = () => (Math.max(0, state.prestige || 0) * 25) + Math.max(1, state.level || 1);
 
 const isPodMode     = () => state.podsUnlocked && state.mode === 'pods';
 const isHookahMode  = () => state.hookahsUnlocked && state.mode === 'hookahs';
@@ -2145,9 +2198,9 @@ const cigMultMul    = () => 1 + 0.3 * state.mult;
 const cigCritChance = () => Math.min(0.6, 0.06 * state.crit);
 const cigTapProg    = () => 0.22 + 0.06 * state.tapPower;
 const cigCycleTime  = () => getBrand().time / cigSpeedMul();
-const cigBaseCycle  = () => getBrand().value * cigBatchSize() * cigMultMul();
+const cigBaseCycle  = () => getBrand().value * cigBatchSize() * cigMultMul() * prestigeIncomeMul();
 const cigAutoRate   = () => 0.4 * state.auto;
-const cigAutoInc    = () => cigAutoRate() * getBrand().value * cigMultMul();
+const cigAutoInc    = () => cigAutoRate() * getBrand().value * cigMultMul() * prestigeIncomeMul();
 const cigCps        = () => (cigBaseCycle() * (1 + cigCritChance() * (CRIT_MUL - 1))) / cigCycleTime() + cigAutoInc();
 
 const podTankCap    = () => 30 + state.podTank * 15;
@@ -2158,9 +2211,9 @@ const podSpeedMul   = () => 1 + 0.25 * state.podAirflow;
 const podCritChance = () => Math.min(0.7, 0.07 * state.podNicotine);
 const podTapProg    = () => 0.24 + 0.06 * state.podTap;
 const podCycleTime  = () => getPod().time / podSpeedMul();
-const podBaseCycle  = () => getPod().value * podCoilMul() * podJuiceMult();
+const podBaseCycle  = () => getPod().value * podCoilMul() * podJuiceMult() * prestigeIncomeMul();
 const podAutoRate   = () => 0.4 * state.podAuto;
-const podAutoInc    = () => podAutoRate() * getPod().value * podCoilMul() * podJuiceMult();
+const podAutoInc    = () => podAutoRate() * getPod().value * podCoilMul() * podJuiceMult() * prestigeIncomeMul();
 const podCps        = () => (podBaseCycle() * (1 + podCritChance() * (CRIT_MUL - 1))) / podCycleTime() + podAutoInc();
 
 const hookahCoalCap   = () => 25 + state.hookahCoalCap * 15;
@@ -2171,9 +2224,9 @@ const hookahSpeedMul  = () => 1 + 0.25 * state.hookahDraft;
 const hookahCritChance= () => Math.min(0.7, 0.07 * state.hookahMix);
 const hookahTapProg   = () => 0.25 + 0.06 * state.hookahTap;
 const hookahCycleTime = () => getHookah().time / hookahSpeedMul();
-const hookahBaseCycle = () => getHookah().value * hookahBowlMul() * hookahCoalMult();
+const hookahBaseCycle = () => getHookah().value * hookahBowlMul() * hookahCoalMult() * prestigeIncomeMul();
 const hookahAutoRate  = () => 0.4 * state.hookahAuto;
-const hookahAutoInc   = () => hookahAutoRate() * getHookah().value * hookahBowlMul() * hookahCoalMult();
+const hookahAutoInc   = () => hookahAutoRate() * getHookah().value * hookahBowlMul() * hookahCoalMult() * prestigeIncomeMul();
 const hookahCps       = () => (hookahBaseCycle() * (1 + hookahCritChance() * (CRIT_MUL - 1))) / hookahCycleTime() + hookahAutoInc();
 
 const brandPrice    = b => Math.max(0, Math.floor(b.price * (1 - 0.08 * state.discount)));
@@ -2232,6 +2285,7 @@ const xpTextEl       = document.getElementById('xpText');
 const xpPctEl        = document.getElementById('xpPct');
 const xpFillEl       = document.getElementById('xpFill');
 const levelOpenBtn    = document.getElementById('levelOpenBtn');
+const prestigeBtn     = document.getElementById('prestigeBtn');
 const levelModal      = document.getElementById('levelModal');
 const levelCloseBtn   = document.getElementById('levelCloseBtn');
 const levelSummaryEl  = document.getElementById('levelSummary');
@@ -3497,6 +3551,7 @@ function loop(now){
         state.hookahCoins += add;
       }
       state.hookahPuffs += hookahAutoRate() * dt;
+      awardXp(hookahAutoRate() * dt * 0.75);
       if(state.hookahCoals > 0){
         state.hookahCoals = Math.max(0, state.hookahCoals - hookahAutoRate() * 0.2 * dt);
       }
@@ -3511,6 +3566,7 @@ function loop(now){
         state.podCoins += add;
       }
       state.podPuffs += podAutoRate() * dt;
+      awardXp(podAutoRate() * dt * 0.75);
       if(state.podJuice > 0){
         state.podJuice = Math.max(0, state.podJuice - podAutoRate() * 0.2 * dt);
       }
@@ -3733,6 +3789,7 @@ levelCloseBtn.addEventListener('click', () => {
 levelModal.addEventListener('click', e => {
   if(e.target === levelModal) levelCloseBtn.click();
 });
+prestigeBtn.addEventListener('click', prestigeReset);
 document.addEventListener('keydown', e => {
   if(e.key === 'Escape' && !levelModal.classList.contains('hidden')) levelCloseBtn.click();
 });
