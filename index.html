@@ -182,6 +182,30 @@ body{
 .profile-stat{padding:10px;border:1px solid var(--line);border-radius:12px;background:rgba(7,14,24,.55);}
 .profile-stat b{display:block;color:#dff5ff;font-size:16px;}
 .profile-stat span{color:var(--dim);font-size:10px;}
+.pipe-tab.active{background:linear-gradient(180deg,#321d2d,#241520);border-color:#f472b6;color:#f9a8d4;}
+.smoke-area.pipe-mode{background:radial-gradient(ellipse at 48% 44%,#31202e 0%,#15101a 78%);border-color:#6b3655;}
+.smoke-area.pipe-mode.puff{box-shadow:inset 0 0 34px rgba(244,114,182,.2);}
+.smoke-area.pipe-mode .cig,.smoke-area.pipe-mode .pack-prop,.smoke-area.pipe-mode .pod-stage,.smoke-area.pipe-mode .hookah-stage{display:none;}
+.smoke-area.pipe-mode .pipe-stage{display:flex;}
+.smoke-area.pipe-mode .fill{background:linear-gradient(90deg,#be185d,#f472b6,#fbcfe8);box-shadow:0 0 12px rgba(244,114,182,.65);}
+.pipe-stage{display:none;align-items:center;justify-content:center;position:relative;width:100%;height:100%;}
+.pipe-rig{position:relative;display:flex;align-items:center;height:112px;min-width:250px;filter:drop-shadow(0 12px 14px rgba(0,0,0,.68));transition:transform .15s ease;}
+.smoke-area.pipe-mode.puff .pipe-rig{transform:scale(1.035) rotate(-1deg);}
+.pipe-bowl{position:relative;z-index:3;width:68px;height:72px;border-radius:42% 42% 30% 30%;background:linear-gradient(135deg,#d97706,#78350f 55%,#2b1308);border:2px solid #f0a03b;box-shadow:inset 7px 6px 10px rgba(255,255,255,.14),inset -10px -8px 14px rgba(0,0,0,.45),0 0 18px rgba(245,158,11,.18);}
+.pipe-bowl::before{content:'';position:absolute;left:10px;right:10px;top:-7px;height:17px;border-radius:50%;background:linear-gradient(180deg,#21151a,#7c2d12);border:2px solid #d97706;box-shadow:inset 0 3px 4px rgba(0,0,0,.8);}
+.pipe-tobacco{position:absolute;left:12px;right:12px;bottom:10px;height:68%;border-radius:50%;background:repeating-linear-gradient(105deg,rgba(255,196,97,.45) 0 2px,transparent 2px 5px),linear-gradient(180deg,#7c2d12,#451a03);opacity:.95;transition:height .15s ease,filter .15s ease;}
+.pipe-ember{position:absolute;left:12px;right:12px;top:0;height:13px;border-radius:50%;background:radial-gradient(ellipse,#fff3b0 0 10%,#fb923c 35%,#b91c1c 72%,transparent 73%);box-shadow:0 0 12px #fb923c,0 0 25px rgba(239,68,68,.46);}
+.pipe-stem{position:relative;width:128px;height:18px;margin-left:-2px;background:linear-gradient(180deg,#d6a568,#7c4a26 48%,#3a1e13);border:2px solid #a66f38;border-left:0;transform:translateY(11px) rotate(-4deg);box-shadow:inset 0 3px 4px rgba(255,255,255,.15),0 5px 8px rgba(0,0,0,.45);}
+.pipe-stem::after{content:'';position:absolute;left:20px;right:12px;top:5px;height:3px;background:rgba(255,221,158,.18);border-radius:99px;}
+.pipe-mouthpiece{width:62px;height:12px;margin-left:-4px;margin-top:16px;border-radius:2px 12px 12px 2px;background:linear-gradient(180deg,#475569,#111827);border:1px solid #64748b;transform:rotate(-4deg);box-shadow:0 4px 7px rgba(0,0,0,.45);}
+.pipe-rig.model-p_briar .pipe-bowl{background:linear-gradient(145deg,#b45309,#713f12 56%,#2d160a);border-color:#f59e0b;}
+.pipe-rig.model-p_church .pipe-bowl{height:66px;background:linear-gradient(145deg,#fb923c,#7c2d12 58%,#2d160a);}
+.pipe-rig.model-p_church .pipe-stem{width:174px;height:13px;background:linear-gradient(180deg,#dbeafe,#60a5fa 46%,#1e3a8a);border-color:#93c5fd;}
+.pipe-rig.model-p_church .pipe-mouthpiece{background:linear-gradient(180deg,#0f172a,#020617);}
+.pipe-rig.model-p_meerschaum .pipe-bowl{background:linear-gradient(145deg,#fef3c7,#d6d3d1 52%,#78716c);border-color:#f5d0fe;}
+.pipe-rig.model-p_meerschaum .pipe-stem{background:linear-gradient(180deg,#fefce8,#cbd5e1 48%,#64748b);border-color:#e2e8f0;}
+.pipe-rig.model-p_dragon .pipe-bowl{background:linear-gradient(145deg,#ef4444,#7f1d1d 48%,#18070b);border-color:#fca5a5;box-shadow:inset 6px 5px 10px rgba(255,255,255,.1),0 0 22px rgba(239,68,68,.35);}
+.pipe-rig.model-p_dragon .pipe-stem{background:linear-gradient(180deg,#475569,#111827 50%,#020617);border-color:#ef4444;}
 .rank-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;padding:0 3px;}
 .rank-head-title{font-size:12px;color:#cbd5e1;font-weight:800;}
 .rank-refresh{padding:7px 9px;border:1px solid rgba(125,211,252,.22);border-radius:9px;background:rgba(56,189,248,.08);color:#bae6fd;font:800 11px inherit;cursor:pointer;}
@@ -772,7 +796,7 @@ body{
 /* ---------- Табы ---------- */
 .tabs{
   display:grid;
-  grid-template-columns:repeat(6,minmax(0,1fr));
+  grid-template-columns:repeat(7,minmax(0,1fr));
   gap:5px;
   margin-bottom:10px;
 }
@@ -1195,6 +1219,12 @@ body{
   border-color:#c084fc;
   background:linear-gradient(180deg,#2a1838,#1c1126);
 }
+.item.current.pipe-card{border-color:#f472b6;background:linear-gradient(180deg,#321a2b,#20111b);}
+.buy.pipe-buy{background:linear-gradient(180deg,#fbcfe8,#ec4899);color:#3b0a25;}
+.mini-pipe{position:relative;width:54px;height:28px;}
+.mini-pipe i{position:absolute;left:4px;bottom:3px;width:17px;height:19px;border-radius:45% 45% 30% 30%;background:linear-gradient(145deg,#f59e0b,#78350f);border:1px solid var(--pipe-c,#f472b6);}
+.mini-pipe i::before{content:'';position:absolute;left:3px;right:3px;top:-3px;height:5px;border-radius:50%;background:#1f1720;}
+.mini-pipe b{position:absolute;left:18px;bottom:8px;width:31px;height:5px;border-radius:0 5px 5px 0;background:var(--pipe-c,#c084fc);transform:rotate(-7deg);}
 .buy.hookah-buy{
   background:linear-gradient(180deg,#e9d5ff,#a855f7);
   color:#1c092e;
@@ -1479,6 +1509,14 @@ body{
           </div>
         </div>
       </div>
+
+      <div class="pipe-stage" id="pipeStage">
+        <div class="pipe-rig model-p_classic" id="pipeEl" style="--pipe-color:#c084fc;">
+          <div class="pipe-bowl"><div class="pipe-tobacco" id="pipeTobaccoBar"></div><div class="pipe-ember" id="pipeEmberEl"></div></div>
+          <div class="pipe-stem"></div>
+          <div class="pipe-mouthpiece"></div>
+        </div>
+      </div>
     </div>
     <div class="bar"><div class="fill" id="fill"></div></div>
     <div class="hint" id="hint">Тапай по сигарете — она плавно догорает справа налево до фильтра 💨</div>
@@ -1489,6 +1527,7 @@ body{
     <button class="tab" data-tab="brands">🚬 Сигареты</button>
     <button class="tab pod-tab locked" data-tab="pods" id="podsTab">💨 Подики 🔒</button>
     <button class="tab hookah-tab locked" data-tab="hookahs" id="hookahsTab">🫧 Кальяны 🔒</button>
+    <button class="tab pipe-tab locked" data-tab="pipes" id="pipesTab">🚬 Трубки 🔒</button>
     <button class="tab" data-tab="ach">🏆 Награды</button>
     <button class="tab" data-tab="rank">📊 Рейтинг</button>
   </div>
@@ -1497,6 +1536,7 @@ body{
   <div class="list hidden" id="brandList"></div>
   <div class="list hidden" id="podList"></div>
   <div class="list hidden" id="hookahList"></div>
+  <div class="list hidden" id="pipeList"></div>
   <div class="list hidden" id="achList"></div>
   <div class="list hidden" id="rankList"></div>
 
@@ -1539,6 +1579,14 @@ const HOOKAHS = [
   { id:'h_union',   name:'Union Sleek',     tag:'Дерево и сталь · Фанел',  color:'#fb923c', value:24,   time:3.3, price:1200 },
   { id:'h_steam',   name:'Steamulation Pro',tag:'Тяга турбо · Калауд+',    color:'#34d399', value:85,   time:3.7, price:8500 },
   { id:'h_royale',  name:'Royale Gold Lava',tag:'Хрусталь · Премиум микс',color:'#f472b6', value:320,  time:4.2, price:60000 }
+];
+
+const PIPES = [
+  { id:'p_classic', name:'Классическая трубка', tag:'Ореховое дерево · 1 чаша', color:'#c084fc', value:1,   time:2.8, price:0 },
+  { id:'p_briar',  name:'Briar Reserve',       tag:'Вереск · глубокая камера', color:'#fb923c', value:8,   time:3.2, price:180 },
+  { id:'p_church',  name:'Churchwarden',         tag:'Длинный мундштук · мягкая тяга', color:'#38bdf8', value:30,  time:3.7, price:1400 },
+  { id:'p_meerschaum',name:'Meerschaum Art',     tag:'Морская пенка · ручная резьба', color:'#f5d0fe', value:110, time:4.3, price:10000 },
+  { id:'p_dragon',  name:'Dragon Master',        tag:'Обсидиан · легендарная чаша', color:'#ef4444', value:420, time:5.0, price:75000 }
 ];
 
 const CIG_UPGRADES = [
@@ -1676,6 +1724,22 @@ const HOOKAH_UPGRADES = [
   }
 ];
 
+const PIPE_UPGRADES = [
+  {
+    id:'pipeTobaccoBuy', name:'Табак для трубки (+25 г)', icon:'🍂',
+    desc:() => `Запас табака: ${state.pipeTobacco.toFixed(1)} / ${pipeTobaccoCap()} г (добавить +25 г)`,
+    btnText:() => `${fmt(pipeTobaccoCost())} 🍂`,
+    canAfford:() => state.pipeCoins >= pipeTobaccoCost() && state.pipeTobacco < pipeTobaccoCap(),
+    customBuy:() => { const cost=pipeTobaccoCost(); if(state.pipeCoins<cost || state.pipeTobacco>=pipeTobaccoCap()) return false; state.pipeCoins-=cost; state.pipeTobacco=Math.min(pipeTobaccoCap(),state.pipeTobacco+25); return true; }
+  },
+  { id:'pipeBowl', name:'Глубина чаши', icon:'🔥', desc:lvl=>`Ур. ${lvl} → ${lvl+1} · Дымность ×${(1+.35*lvl).toFixed(2)} → ×${(1+.35*(lvl+1)).toFixed(2)}`, cost:lvl=>Math.floor(28*Math.pow(1.85,lvl)) },
+  { id:'pipeTobaccoCap', name:'Табачный кисет', icon:'👜', desc:lvl=>`${30+lvl*15} → ${45+lvl*15} г макс. запаса`, cost:lvl=>Math.floor(40*Math.pow(2,lvl)) },
+  { id:'pipeDraft', name:'Мягкость тяги', icon:'🌬️', desc:lvl=>`Скорость тления ×${(1+.25*lvl).toFixed(2)} → ×${(1+.25*(lvl+1)).toFixed(2)}`, cost:lvl=>Math.floor(32*Math.pow(1.8,lvl)) },
+  { id:'pipeTap', name:'Ритм затяжки', icon:'👆', desc:lvl=>`+${(.25+.06*lvl).toFixed(2)} → +${(.25+.06*(lvl+1)).toFixed(2)} за тап`, cost:lvl=>Math.floor(55*Math.pow(1.95,lvl)) },
+  { id:'pipeAuto', name:'Хранитель огня', icon:'🧑‍🌾', desc:lvl=>`${(.4*lvl).toFixed(1)} → ${(.4*(lvl+1)).toFixed(1)} тяг/сек`, cost:lvl=>Math.floor(155*Math.pow(1.75,lvl)) },
+  { id:'pipeBlend', name:'Авторская смесь', icon:'✨', max:10, desc:lvl=>`${7*lvl}% → ${7*(lvl+1)}% шанс крит-облака ×5`, cost:lvl=>Math.floor(330*Math.pow(2.15,lvl)) }
+];
+
 const LEGACY_ACHIEVEMENTS = [
   { id:'first',    icon:'🚬', name:'Первая затяжка',   desc:'Выкури 1 сигарету',             reward:5,     check:s=>s.smoked>=1 },
   { id:'ten',      icon:'🔟', name:'Десятка',          desc:'Выкури 10 сигарет',             reward:20,    check:s=>s.smoked>=10 },
@@ -1799,6 +1863,19 @@ const DEFAULT_STATE = {
   hookahAuto: 0,
   hookahMix: 0,
 
+  pipesUnlocked: false,
+  pipeCoins: 0,
+  pipePuffs: 0,
+  pipe: 'p_classic',
+  ownedPipes: ['p_classic'],
+  pipeTobacco: 25,
+  pipeBowl: 0,
+  pipeTobaccoCap: 0,
+  pipeDraft: 0,
+  pipeTap: 0,
+  pipeAuto: 0,
+  pipeBlend: 0,
+
   level: 1,
   xp: 0,
   totalXp: 0,
@@ -1826,6 +1903,7 @@ function profileSnapshot(){
     achievements: state.ach.length,
     pod_puffs: Math.floor(state.podPuffs || 0),
     hookah_puffs: Math.floor(state.hookahPuffs || 0),
+    pipe_puffs: Math.floor(state.pipePuffs || 0),
     mode: state.mode || 'cigs'
   };
 }
@@ -1844,7 +1922,8 @@ function renderProfile(){
     ['Критические затяжки', fmt(snap.crits)],
     ['Достижения', `${snap.achievements} / ${ACHIEVEMENTS.length}`],
     ['Затяжки подика', fmt(snap.pod_puffs)],
-    ['Тяги кальяна', fmt(snap.hookah_puffs)]
+    ['Тяги кальяна', fmt(snap.hookah_puffs)],
+    ['Тяги трубки', fmt(snap.pipe_puffs)]
   ].forEach(([label,value]) => {
     const el = document.createElement('div');
     el.className = 'profile-stat';
@@ -1871,7 +1950,7 @@ async function syncRemoteProfile(){
     player_id:user.id, level:snap.level, prestige:snap.prestige, xp:snap.xp, total_xp:snap.total_xp,
       coins:snap.coins, total_earned:snap.total_earned, smoked:snap.smoked,
       crits:snap.crits, achievements:snap.achievements, pod_puffs:snap.pod_puffs,
-      hookah_puffs:snap.hookah_puffs, mode:snap.mode, updated_at:new Date().toISOString()
+      hookah_puffs:snap.hookah_puffs, pipe_puffs:snap.pipe_puffs, mode:snap.mode, updated_at:new Date().toISOString()
     }, { onConflict:'player_id' });
     if(statsError) throw new Error(`player_stats: ${statsError.message}`);
     if(profileStatusEl) profileStatusEl.textContent = 'Синхронизировано с Supabase';
@@ -1984,10 +2063,12 @@ function load(){
     if(!Array.isArray(merged.owned) || !merged.owned.length) merged.owned = ['prima'];
     if(!Array.isArray(merged.ownedPods) || !merged.ownedPods.length) merged.ownedPods = ['pod_mini'];
     if(!Array.isArray(merged.ownedHookahs) || !merged.ownedHookahs.length) merged.ownedHookahs = ['h_classic'];
+    if(!Array.isArray(merged.ownedPipes) || !merged.ownedPipes.length) merged.ownedPipes = ['p_classic'];
     const numericKeys = [
       'coins','smoked','totalEarned','crits','speed','tapPower','batch','pullSpeed','auto','mult','crit','discount',
       'podCoins','podPuffs','podJuice','podCoil','podTank','podAirflow','podTap','podAuto','podNicotine',
-      'hookahCoins','hookahPuffs','hookahCoals','hookahBowl','hookahCoalCap','hookahDraft','hookahTap','hookahAuto','hookahMix','prestige'
+      'hookahCoins','hookahPuffs','hookahCoals','hookahBowl','hookahCoalCap','hookahDraft','hookahTap','hookahAuto','hookahMix',
+      'pipeCoins','pipePuffs','pipeTobacco','pipeBowl','pipeTobaccoCap','pipeDraft','pipeTap','pipeAuto','pipeBlend','prestige'
     ];
     numericKeys.forEach(key => {
       const value = Number(merged[key]);
@@ -1996,19 +2077,25 @@ function load(){
     merged.owned = [...new Set(merged.owned.filter(id => BRANDS.some(x => x.id === id)))];
     merged.ownedPods = [...new Set(merged.ownedPods.filter(id => PODS.some(x => x.id === id)))];
     merged.ownedHookahs = [...new Set(merged.ownedHookahs.filter(id => HOOKAHS.some(x => x.id === id)))];
+    merged.ownedPipes = [...new Set(merged.ownedPipes.filter(id => PIPES.some(x => x.id === id)))];
     if(!merged.owned.length) merged.owned = ['prima'];
     if(!merged.ownedPods.length) merged.ownedPods = ['pod_mini'];
     if(!merged.ownedHookahs.length) merged.ownedHookahs = ['h_classic'];
+    if(!merged.ownedPipes.length) merged.ownedPipes = ['p_classic'];
     merged.podsUnlocked = Boolean(merged.podsUnlocked) || merged.owned.length >= BRANDS.length;
     merged.hookahsUnlocked = Boolean(merged.hookahsUnlocked) || merged.ownedPods.length >= PODS.length;
+    merged.pipesUnlocked = Boolean(merged.pipesUnlocked) || merged.ownedHookahs.length >= HOOKAHS.length;
     merged.podJuice = Math.min(merged.podJuice, 30 + merged.podTank * 15);
     merged.hookahCoals = Math.min(merged.hookahCoals, 25 + merged.hookahCoalCap * 15);
+    merged.pipeTobacco = Math.min(merged.pipeTobacco, 30 + merged.pipeTobaccoCap * 15);
     if(!['cigs','pods','hookahs'].includes(merged.mode)) merged.mode = 'cigs';
     if(!BRANDS.some(x => x.id === merged.brand) || !merged.owned.includes(merged.brand)) merged.brand = 'prima';
     if(!PODS.some(x => x.id === merged.pod) || !merged.ownedPods.includes(merged.pod)) merged.pod = 'pod_mini';
     if(!HOOKAHS.some(x => x.id === merged.hookah) || !merged.ownedHookahs.includes(merged.hookah)) merged.hookah = 'h_classic';
+    if(!PIPES.some(x => x.id === merged.pipe) || !merged.ownedPipes.includes(merged.pipe)) merged.pipe = 'p_classic';
     if(!merged.podsUnlocked) merged.mode = 'cigs';
     if(!merged.hookahsUnlocked && merged.mode === 'hookahs') merged.mode = merged.podsUnlocked ? 'pods' : 'cigs';
+    if(!merged.pipesUnlocked && merged.mode === 'pipes') merged.mode = merged.hookahsUnlocked ? 'hookahs' : (merged.podsUnlocked ? 'pods' : 'cigs');
     merged.level = Math.max(1, Number(merged.level) || 1);
     merged.xp = Math.max(0, Number(merged.xp) || 0);
     merged.totalXp = Math.max(0, Number(merged.totalXp) || 0);
@@ -2186,9 +2273,11 @@ const prestigeRating = () => (Math.max(0, state.prestige || 0) * 25) + Math.max(
 
 const isPodMode     = () => state.podsUnlocked && state.mode === 'pods';
 const isHookahMode  = () => state.hookahsUnlocked && state.mode === 'hookahs';
+const isPipeMode    = () => state.pipesUnlocked && state.mode === 'pipes';
 const getBrand      = () => BRANDS.find(b => b.id === state.brand) || BRANDS[0];
 const getPod        = () => PODS.find(p => p.id === state.pod) || PODS[0];
 const getHookah     = () => HOOKAHS.find(h => h.id === state.hookah) || HOOKAHS[0];
+const getPipe       = () => PIPES.find(p => p.id === state.pipe) || PIPES[0];
 
 const cigSpeedMul   = () => 1 + 0.25 * state.speed;
 const cigBatchSize  = () => 1 + state.batch;
@@ -2228,6 +2317,19 @@ const hookahBaseCycle = () => getHookah().value * hookahBowlMul() * hookahCoalMu
 const hookahAutoRate  = () => 0.4 * state.hookahAuto;
 const hookahAutoInc   = () => hookahAutoRate() * getHookah().value * hookahBowlMul() * hookahCoalMult() * prestigeIncomeMul();
 const hookahCps       = () => (hookahBaseCycle() * (1 + hookahCritChance() * (CRIT_MUL - 1))) / hookahCycleTime() + hookahAutoInc();
+
+const pipeTobaccoCap  = () => 30 + state.pipeTobaccoCap * 15;
+const pipeTobaccoCost = () => Math.max(10, Math.floor(getPipe().value * 6));
+const pipeTobaccoMult = () => state.pipeTobacco > 0 ? 1 : 0.2;
+const pipeBowlMul     = () => 1 + 0.35 * state.pipeBowl;
+const pipeSpeedMul    = () => 1 + 0.25 * state.pipeDraft;
+const pipeCritChance  = () => Math.min(0.7, 0.07 * state.pipeBlend);
+const pipeTapProg     = () => 0.25 + 0.06 * state.pipeTap;
+const pipeCycleTime   = () => getPipe().time / pipeSpeedMul();
+const pipeBaseCycle   = () => getPipe().value * pipeBowlMul() * pipeTobaccoMult() * prestigeIncomeMul();
+const pipeAutoRate    = () => 0.4 * state.pipeAuto;
+const pipeAutoInc     = () => pipeAutoRate() * getPipe().value * pipeBowlMul() * pipeTobaccoMult() * prestigeIncomeMul();
+const pipeCps         = () => (pipeBaseCycle() * (1 + pipeCritChance() * (CRIT_MUL - 1))) / pipeCycleTime() + pipeAutoInc();
 
 const brandPrice    = b => Math.max(0, Math.floor(b.price * (1 - 0.08 * state.discount)));
 const podPrice      = p => p.price;
@@ -2275,10 +2377,15 @@ const achList        = document.getElementById('achList');
 const hookahEl       = document.getElementById('hookahEl');
 const hookahCoalZone = document.getElementById('hookahCoalZone');
 const hookahWaterBar = document.getElementById('hookahWaterBar');
+const pipeEl         = document.getElementById('pipeEl');
+const pipeEmberEl    = document.getElementById('pipeEmberEl');
+const pipeTobaccoBar = document.getElementById('pipeTobaccoBar');
 const hookahList     = document.getElementById('hookahList');
 const rankList       = document.getElementById('rankList');
+const pipeList       = document.getElementById('pipeList');
 const podsTab        = document.getElementById('podsTab');
 const hookahsTab     = document.getElementById('hookahsTab');
+const pipesTab       = document.getElementById('pipesTab');
 const levelPillEl    = document.getElementById('levelPill');
 const levelTitleEl   = document.getElementById('levelTitle');
 const xpTextEl       = document.getElementById('xpText');
@@ -2313,6 +2420,10 @@ const hookahBuyBtns = {};
 const hookahDescEls = {};
 const hookahBtns    = {};
 const hookahCards   = {};
+const pipeBuyBtns = {};
+const pipeDescEls = {};
+const pipeBtns = {};
+const pipeCards = {};
 const achCards     = {};
 const achStatus    = {};
 
@@ -2398,6 +2509,13 @@ function getEmitterPositions(){
     return [{
       x: (tipRect.left - areaRect.left) + tipRect.width * 0.25,
       y: (tipRect.top  - areaRect.top)  + tipRect.height * 0.45
+    }];
+  }
+  if(isPipeMode()){
+    const emberRect = pipeEmberEl.getBoundingClientRect();
+    return [{
+      x: (emberRect.left - areaRect.left) + emberRect.width * 0.5,
+      y: (emberRect.top - areaRect.top) + emberRect.height * 0.5
     }];
   }
   const embers = cigStack.querySelectorAll('.cig:not(.no-ember) .ember');
@@ -2508,6 +2626,7 @@ function triggerPuffFX(isCrit){
 
   const pts = getEmitterPositions();
   const pod = isPodMode();
+  const pipe = isPipeMode();
   const perCig = Math.max(1, Math.ceil((isCrit ? 10 : 5) / Math.max(1, pts.length)));
 
   pts.forEach((pos, idx) => {
@@ -2515,7 +2634,7 @@ function triggerPuffFX(isCrit){
     for(let i = 0; i < burst; i++){
       spawnSmokePuff(pos.x, pos.y, pod, true);
     }
-    if(!pod){
+    if(!pod && !pipe){
       const fCount = isCrit ? Math.max(2, perCig) : Math.max(1, Math.ceil(perCig * 0.7));
       for(let i = 0; i < fCount; i++){
         spawnFlameTongue(pos.x, pos.y, true);
@@ -2524,6 +2643,7 @@ function triggerPuffFX(isCrit){
         spawnSparks(pos.x, pos.y, isCrit ? 6 : 3);
       }
     }
+    if(pipe && (idx === 0 || isCrit)) spawnSparks(pos.x, pos.y, isCrit ? 5 : 2);
     if(isCrit || (idx === 0 && Math.random() < 0.24)){
       spawnSmokeRing(pos.x, pos.y, pod);
     }
@@ -2580,14 +2700,18 @@ function updateAndDrawSmoke(dt, nowSec){
   windPhase += dt * 1.5;
 
   const pod = isPodMode();
-  const cigActive = !pod && phase === 'smoke';
+  const pipe = isPipeMode();
+  const hookah = isHookahMode();
+  const cigActive = !pod && !pipe && !hookah && phase === 'smoke';
+  const pipeActive = pipe;
   const pts = getEmitterPositions();
 
   const emitInterval = pod
     ? (state.podJuice > 0 ? (puffBoost > 0.1 ? 0.045 : 0.16) : 0.45)
+    : pipe ? (state.pipeTobacco > 0 ? (puffBoost > 0.1 ? 0.06 : 0.13) : 0.45)
     : (puffBoost > 0.1 ? 0.045 : 0.1);
 
-  if(pod || cigActive){
+  if(pod || pipeActive || cigActive){
     smokeTimer += dt;
     if(smokeTimer >= emitInterval){
       smokeTimer = 0;
@@ -2816,6 +2940,10 @@ function renderVisuals(){
   const hCap = hookahCoalCap();
   const coalPct = Math.max(0, Math.min(100, (state.hookahCoals / hCap) * 100));
   hookahWaterBar.style.height = Math.max(12, coalPct) + '%';
+
+  const tCap = pipeTobaccoCap();
+  const tobaccoPct = Math.max(0, Math.min(100, (state.pipeTobacco / tCap) * 100));
+  pipeTobaccoBar.style.height = Math.max(8, tobaccoPct) + '%';
 }
 
 /* =========================================================
@@ -2823,17 +2951,17 @@ function renderVisuals(){
    ========================================================= */
 let renderedShopMode = null;
 
-const getActiveModeKey = () => isHookahMode() ? 'hookahs' : (isPodMode() ? 'pods' : 'cigs');
+const getActiveModeKey = () => isPipeMode() ? 'pipes' : (isHookahMode() ? 'hookahs' : (isPodMode() ? 'pods' : 'cigs'));
 
 function buildShop(forceMode){
   const mode = forceMode || getActiveModeKey();
   renderedShopMode = mode;
   shopList.innerHTML = '';
 
-  const items = mode === 'hookahs' ? HOOKAH_UPGRADES : (mode === 'pods' ? POD_UPGRADES : CIG_UPGRADES);
+  const items = mode === 'pipes' ? PIPE_UPGRADES : (mode === 'hookahs' ? HOOKAH_UPGRADES : (mode === 'pods' ? POD_UPGRADES : CIG_UPGRADES));
   items.forEach(u => {
     const el = document.createElement('div');
-    el.className = 'item' + (mode === 'hookahs' ? ' hookah-card' : (mode === 'pods' ? ' pod-card' : ''));
+    el.className = 'item' + (mode === 'pipes' ? ' pipe-card' : (mode === 'hookahs' ? ' hookah-card' : (mode === 'pods' ? ' pod-card' : '')));
 
     const icon = document.createElement('div');
     icon.className = 'icon';
@@ -2850,7 +2978,7 @@ function buildShop(forceMode){
     info.appendChild(ds);
 
     const btn = document.createElement('button');
-    btn.className = 'buy' + (mode === 'hookahs' ? ' hookah-buy' : (mode === 'pods' ? ' pod-buy' : ''));
+    btn.className = 'buy' + (mode === 'pipes' ? ' pipe-buy' : (mode === 'hookahs' ? ' hookah-buy' : (mode === 'pods' ? ' pod-buy' : '')));
     btn.addEventListener('click', () => buyUpgrade(u.id, mode));
 
     el.appendChild(icon);
@@ -2858,7 +2986,10 @@ function buildShop(forceMode){
     el.appendChild(btn);
     shopList.appendChild(el);
 
-    if(mode === 'hookahs'){
+    if(mode === 'pipes'){
+      pipeBuyBtns[u.id] = btn;
+      pipeDescEls[u.id] = ds;
+    } else if(mode === 'hookahs'){
       hookahBuyBtns[u.id] = btn;
       hookahDescEls[u.id] = ds;
     } else if(mode === 'pods'){
@@ -3013,6 +3144,36 @@ function buildHookahs(){
   });
 }
 
+function buildPipes(){
+  pipeList.innerHTML = '';
+  const banner = document.createElement('div');
+  banner.className = 'level-banner';
+  banner.style.borderColor = '#c02669';
+  banner.style.background = 'linear-gradient(180deg,#321a2b,#1d101a)';
+  banner.innerHTML = '<div><b style="color:#f9a8d4">Новый уровень: Трубки</b><br><span style="color:var(--dim)">Своя валюта 🍂 и медленное ароматное тление. Следи за запасом табака.</span></div>' +
+    '<button class="mode-switch" id="togglePipeModeBtn" style="border-color:#f472b6;background:#4a102d;color:#fbcfe8;">Режим</button>';
+  pipeList.appendChild(banner);
+  document.getElementById('togglePipeModeBtn').addEventListener('click', () => {
+    if(!state.pipesUnlocked) return;
+    switchMode(state.mode === 'pipes' ? 'hookahs' : 'pipes');
+  });
+
+  PIPES.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'item pipe-card';
+    const icon = document.createElement('div');
+    icon.className = 'icon brand-preview';
+    icon.innerHTML = `<div class="mini-pipe" style="--pipe-c:${p.color}"><i></i><b></b></div>`;
+    const info = document.createElement('div'); info.className = 'info';
+    const nm = document.createElement('div'); nm.className = 'name'; nm.textContent = p.name;
+    const ds = document.createElement('div'); ds.className = 'desc'; ds.textContent = `${p.tag} · ${fmt(p.value)} 🍂 за ${p.time.toFixed(1)} с`;
+    info.appendChild(nm); info.appendChild(ds);
+    const btn = document.createElement('button'); btn.className = 'buy pipe-buy'; btn.addEventListener('click', () => handlePipe(p.id));
+    el.appendChild(icon); el.appendChild(info); el.appendChild(btn); pipeList.appendChild(el);
+    pipeBtns[p.id] = btn; pipeCards[p.id] = el;
+  });
+}
+
 function buildAchievements(){
   achList.innerHTML = '';
 
@@ -3074,11 +3235,19 @@ function applyHookahSkin(){
   hookahEl.style.setProperty('--hookah-color', h.color);
 }
 
+function applyPipeSkin(){
+  const p = getPipe();
+  pipeEl.className = 'pipe-rig model-' + p.id;
+  pipeEl.style.setProperty('--pipe-color', p.color);
+}
+
 function applyModeVisual(){
   const hookahActive = isHookahMode();
   const podActive = !hookahActive && isPodMode();
+  const pipeActive = !hookahActive && !podActive && isPipeMode();
   tapArea.classList.toggle('hookah-mode', hookahActive);
   tapArea.classList.toggle('pod-mode', podActive);
+  tapArea.classList.toggle('pipe-mode', pipeActive);
 
   if(hookahActive){
     sceneLabelEl.textContent = 'КАЛЬЯННАЯ СЕССИЯ';
@@ -3094,6 +3263,13 @@ function applyModeVisual(){
     hintEl.textContent = state.podJuice > 0
       ? `${getPod().name} · В баке ${state.podJuice.toFixed(1)} / ${podTankCap()} мл жижи 💨`
       : '⚠️ Бак пустой! Купи жижу в разделе «Улучшения» (доход ×0.2)';
+  } else if(pipeActive){
+    sceneLabelEl.textContent = 'ТРУБОЧНАЯ СЕССИЯ';
+    coinsLabelEl.textContent = 'Трубочные коины';
+    smokedLabelEl.textContent = 'Тяги';
+    hintEl.textContent = state.pipeTobacco > 0
+      ? `${getPipe().name} · Табака ${state.pipeTobacco.toFixed(1)} / ${pipeTobaccoCap()} г 🍂`
+      : '⚠️ Табак закончился! Пополни кисет в разделе «Улучшения» (доход ×0.2)';
   } else {
     sceneLabelEl.textContent = 'СИГАРЕТНЫЙ ЦИКЛ';
     coinsLabelEl.textContent  = 'Монеты';
@@ -3108,6 +3284,7 @@ function applyModeVisual(){
 function switchMode(newMode){
   if(newMode === 'pods' && !state.podsUnlocked) return;
   if(newMode === 'hookahs' && !state.hookahsUnlocked) return;
+  if(newMode === 'pipes' && !state.pipesUnlocked) return;
   state.mode = newMode;
   progress = 0;
   autoAcc = 0;
@@ -3131,6 +3308,7 @@ function switchMode(newMode){
   applyModeVisual();
   applySkins();
   applyHookahSkin();
+  applyPipeSkin();
   updateUI();
   save();
 }
@@ -3162,6 +3340,16 @@ function checkHookahLevelUnlock(){
       desc: 'Новая прокачка с нуля: угли, чаши и модели кальянов!',
       reward: 0
     });
+  }
+}
+
+function checkPipeLevelUnlock(){
+  if(!state.pipesUnlocked && state.ownedHookahs.length >= HOOKAHS.length){
+    state.pipesUnlocked = true;
+    state.pipeCoins = 0;
+    state.pipeTobacco = 25;
+    switchMode('pipes');
+    showToast({icon:'🚬', name:'Новый уровень: Трубки!', desc:'Новая прокачка с нуля: табак, чаши и коллекция трубок!', reward:0});
   }
 }
 
@@ -3291,6 +3479,24 @@ function handleHookah(id){
 /* =========================================================
    ДОСТИЖЕНИЯ
    ========================================================= */
+function handlePipe(id){
+  if(!state.pipesUnlocked) return;
+  const p = PIPES.find(x => x.id === id);
+  const owned = state.ownedPipes.includes(id);
+  if(!owned){
+    if(state.pipeCoins < p.price) return;
+    state.pipeCoins -= p.price;
+    state.ownedPipes.push(id);
+    state.pipe = id;
+    awardXp(50);
+    buzz(15);
+  } else {
+    state.pipe = id;
+  }
+  if(!isPipeMode()) switchMode('pipes');
+  else { applyModeVisual(); applyPipeSkin(); updateUI(); save(); }
+}
+
 function checkAchievements(){
   for(const a of ACHIEVEMENTS){
     if(state.ach.includes(a.id)) continue;
@@ -3388,6 +3594,21 @@ function completeCycle(){
     triggerPuffFX(isCrit);
     popup(isCrit ? 'КРИТ! +' + fmt(gain) + ' 💧' : '+' + fmt(gain) + ' 💧', isCrit);
     if(!isCrit) buzz(6);
+  } else if(isPipeMode()){
+    if(state.pipeTobacco > 0) state.pipeTobacco = Math.max(0, state.pipeTobacco - 1);
+    let gain = pipeBaseCycle();
+    let isCrit = false;
+    if(Math.random() < pipeCritChance()){
+      gain *= CRIT_MUL;
+      isCrit = true;
+      buzz(20);
+    }
+    state.pipeCoins += gain;
+    state.pipePuffs += 1;
+    awardXp(isCrit ? 13 : 4);
+    triggerPuffFX(isCrit);
+    popup(isCrit ? 'КРИТ! +' + fmt(gain) + ' 🍂' : '+' + fmt(gain) + ' 🍂', isCrit);
+    if(!isCrit) buzz(6);
   } else {
     let gain = cigBaseCycle();
     let isCrit = false;
@@ -3438,9 +3659,10 @@ function loop(now){
 
   const hookahActive = isHookahMode();
   const podActive = !hookahActive && isPodMode();
-  const curCycleTime = hookahActive ? hookahCycleTime() : (podActive ? podCycleTime() : cigCycleTime());
+  const pipeActive = !hookahActive && !podActive && isPipeMode();
+  const curCycleTime = hookahActive ? hookahCycleTime() : (podActive ? podCycleTime() : (pipeActive ? pipeCycleTime() : cigCycleTime()));
 
-  if(hookahActive || podActive){
+  if(hookahActive || podActive || pipeActive){
     progress += dt / curCycleTime;
     if(progress >= 1) advanceCycles();
     const target = Math.max(0, 1 - progress);
@@ -3571,6 +3793,21 @@ function loop(now){
         state.podJuice = Math.max(0, state.podJuice - podAutoRate() * 0.2 * dt);
       }
     }
+  } else if(pipeActive){
+    const ai = pipeAutoInc();
+    if(ai > 0){
+      autoAcc += ai * dt;
+      if(autoAcc >= 1){
+        const add = Math.floor(autoAcc);
+        autoAcc -= add;
+        state.pipeCoins += add;
+      }
+      state.pipePuffs += pipeAutoRate() * dt;
+      awardXp(pipeAutoRate() * dt * 0.75);
+      if(state.pipeTobacco > 0){
+        state.pipeTobacco = Math.max(0, state.pipeTobacco - pipeAutoRate() * 0.2 * dt);
+      }
+    }
   } else {
     const ai = cigAutoInc();
     if(ai > 0){
@@ -3602,11 +3839,13 @@ function updateUI(){
   if(!levelModal.classList.contains('hidden')) renderLevelMenu();
   checkPodLevelUnlock();
   checkHookahLevelUnlock();
+  checkPipeLevelUnlock();
   checkAchievements();
 
   const hookahActive = isHookahMode();
   const podActive = !hookahActive && isPodMode();
-  const modeKey = hookahActive ? 'hookahs' : (podActive ? 'pods' : 'cigs');
+  const pipeActive = !hookahActive && !podActive && isPipeMode();
+  const modeKey = pipeActive ? 'pipes' : (hookahActive ? 'hookahs' : (podActive ? 'pods' : 'cigs'));
   if(renderedShopMode !== modeKey){
     buildShop(modeKey);
   }
@@ -3618,6 +3857,8 @@ function updateUI(){
 
   hookahsTab.classList.toggle('locked', !state.hookahsUnlocked);
   hookahsTab.textContent = state.hookahsUnlocked ? '🫧 Кальяны' : `🫧 Кальяны (${state.ownedPods.length}/${PODS.length})`;
+  pipesTab.classList.toggle('locked', !state.pipesUnlocked);
+  pipesTab.textContent = state.pipesUnlocked ? '🚬 Трубки' : `🚬 Трубки (${state.ownedHookahs.length}/${HOOKAHS.length})`;
 
   const toggleBtn = document.getElementById('toggleModeBtn');
   if(toggleBtn){
@@ -3626,6 +3867,10 @@ function updateUI(){
   const toggleHookahBtn = document.getElementById('toggleHookahModeBtn');
   if(toggleHookahBtn){
     toggleHookahBtn.textContent = hookahActive ? 'На подики 💨' : 'На кальяны 🫧';
+  }
+  const togglePipeBtn = document.getElementById('togglePipeModeBtn');
+  if(togglePipeBtn){
+    togglePipeBtn.textContent = pipeActive ? 'На кальяны 🫧' : 'На трубки 🚬';
   }
 
   if(hookahActive){
@@ -3636,17 +3881,21 @@ function updateUI(){
     coinsEl.textContent  = fmt(state.podCoins) + ' 💧';
     smokedEl.textContent = fmt(Math.floor(state.podPuffs));
     cpsEl.textContent    = fmtDec(podCps());
+  } else if(pipeActive){
+    coinsEl.textContent  = fmt(state.pipeCoins) + ' 🍂';
+    smokedEl.textContent = fmt(Math.floor(state.pipePuffs));
+    cpsEl.textContent    = fmtDec(pipeCps());
   } else {
     coinsEl.textContent  = fmt(state.coins);
     smokedEl.textContent = fmt(Math.floor(state.smoked));
     cpsEl.textContent    = fmtDec(cigCps());
   }
 
-  const activeUpgrades = hookahActive ? HOOKAH_UPGRADES : (podActive ? POD_UPGRADES : CIG_UPGRADES);
-  const btnMap  = hookahActive ? hookahBuyBtns : (podActive ? podBuyBtns : cigBuyBtns);
-  const descMap = hookahActive ? hookahDescEls : (podActive ? podDescEls : cigDescEls);
-  const wallet  = hookahActive ? state.hookahCoins : (podActive ? state.podCoins : state.coins);
-  const unit    = hookahActive ? ' 🫧' : (podActive ? ' 💧' : ' 🪙');
+  const activeUpgrades = pipeActive ? PIPE_UPGRADES : (hookahActive ? HOOKAH_UPGRADES : (podActive ? POD_UPGRADES : CIG_UPGRADES));
+  const btnMap  = pipeActive ? pipeBuyBtns : (hookahActive ? hookahBuyBtns : (podActive ? podBuyBtns : cigBuyBtns));
+  const descMap = pipeActive ? pipeDescEls : (hookahActive ? hookahDescEls : (podActive ? podDescEls : cigDescEls));
+  const wallet  = pipeActive ? state.pipeCoins : (hookahActive ? state.hookahCoins : (podActive ? state.podCoins : state.coins));
+  const unit    = pipeActive ? ' 🍂' : (hookahActive ? ' 🫧' : (podActive ? ' 💧' : ' 🪙'));
 
   activeUpgrades.forEach(u => {
     const lvl = state[u.id] || 0;
@@ -3659,7 +3908,7 @@ function updateUI(){
       btn.textContent = u.btnText();
       btn.disabled = !can;
       btn.classList.remove('maxed');
-      btn.classList.toggle('shortage', hookahActive && !can);
+      btn.classList.toggle('shortage', (hookahActive || pipeActive) && !can);
     } else if(lvl >= max){
       btn.textContent = 'МАКС';
       btn.disabled = true;
@@ -3671,7 +3920,7 @@ function updateUI(){
       btn.textContent = fmt(cost) + unit;
       btn.disabled = lacks;
       btn.classList.remove('maxed');
-      btn.classList.toggle('shortage', hookahActive && lacks);
+      btn.classList.toggle('shortage', (hookahActive || pipeActive) && lacks);
     }
     descMap[u.id].textContent = u.desc(lvl);
   });
@@ -3766,6 +4015,23 @@ function updateUI(){
     }
   });
 
+  PIPES.forEach(p => {
+    const owned = state.ownedPipes.includes(p.id);
+    const btn = pipeBtns[p.id];
+    const card = pipeCards[p.id];
+    const notEnough = state.pipeCoins < p.price;
+    if(!state.pipesUnlocked){
+      btn.textContent = 'Закрыто'; btn.disabled = true; btn.classList.remove('maxed','shortage'); card.classList.remove('current','shortage'); card.style.opacity = '.75';
+    } else if(!owned){
+      btn.textContent = notEnough ? `Мало 🍂 · ${fmt(p.price)}` : `${fmt(p.price)} 🍂`;
+      btn.disabled = notEnough; btn.classList.remove('maxed'); btn.classList.toggle('shortage', notEnough); card.classList.remove('current','shortage'); card.style.opacity = notEnough ? '.86' : '1';
+    } else if(pipeActive && state.pipe === p.id){
+      btn.textContent = '✓ Выбрано'; btn.disabled = true; btn.classList.add('maxed'); btn.classList.remove('shortage'); card.classList.add('current'); card.classList.remove('shortage'); card.style.opacity = '1';
+    } else {
+      btn.textContent = 'Выбрать'; btn.disabled = false; btn.classList.remove('maxed','shortage'); card.classList.remove('current','shortage'); card.style.opacity = '1';
+    }
+  });
+
   let done = 0;
   ACHIEVEMENTS.forEach(a => {
     const unlocked = state.ach.includes(a.id);
@@ -3831,7 +4097,7 @@ tapArea.addEventListener('pointerdown', e => {
   if(phase === 'smoke'){
     awardXp(1);
     triggerPuffFX(false);
-    progress += isHookahMode() ? hookahTapProg() : (isPodMode() ? podTapProg() : cigTapProg());
+    progress += isHookahMode() ? hookahTapProg() : (isPodMode() ? podTapProg() : (isPipeMode() ? pipeTapProg() : cigTapProg()));
     if(progress >= 1) advanceCycles();
   }
 
@@ -3847,7 +4113,7 @@ function buzz(ms){
 /* =========================================================
    ТАБЫ
    ========================================================= */
-const PANELS = { shop: shopList, brands: brandList, pods: podList, hookahs: hookahList, ach: achList, rank: rankList };
+const PANELS = { shop: shopList, brands: brandList, pods: podList, hookahs: hookahList, pipes: pipeList, ach: achList, rank: rankList };
 
 document.querySelectorAll('.tab').forEach(tab => {
   tab.addEventListener('click', () => {
@@ -3868,6 +4134,10 @@ document.querySelectorAll('.tab').forEach(tab => {
         desc: `Собери все подики (${state.ownedPods.length} из ${PODS.length})`,
         reward: 0
       });
+      return;
+    }
+    if(key === 'pipes' && !state.pipesUnlocked){
+      showToast({icon:'🔒', name:'Трубки ещё закрыты', desc:`Собери все модели кальянов (${state.ownedHookahs.length} из ${HOOKAHS.length})`, reward:0});
       return;
     }
     document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t === tab));
@@ -3906,6 +4176,7 @@ document.getElementById('resetBtn').addEventListener('click', () => {
     applyModeVisual();
     applySkins();
     applyHookahSkin();
+    applyPipeSkin();
     measure();
     save();
     updateUI();
@@ -3932,10 +4203,12 @@ buildShop();
 buildBrands();
 buildPods();
 buildHookahs();
+buildPipes();
 buildAchievements();
 applyModeVisual();
 applySkins();
 applyHookahSkin();
+applyPipeSkin();
 measure();
 updateUI();
 requestAnimationFrame(loop);
