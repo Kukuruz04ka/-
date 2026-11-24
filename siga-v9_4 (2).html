@@ -1,0 +1,3807 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#14141a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>🚬 Сигаретный Тайкун</title>
+<style>
+:root{
+  --bg:#080b12;
+  --card:#111722;
+  --card2:#182131;
+  --accent:#ff8a3d;
+  --accent2:#ffd166;
+  --text:#f2f5fb;
+  --dim:#8e9aad;
+  --green:#4ade80;
+  --red:#f05252;
+  --pod:#38bdf8;
+  --line:rgba(148,163,184,.16);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(255,138,61,.16), transparent 32%),
+    radial-gradient(circle at 100% 45%, rgba(56,189,248,.08), transparent 30%),
+    linear-gradient(180deg,#0b1019 0%,#080b12 72%) fixed;
+  color:var(--text);
+  padding:10px 10px calc(24px + env(safe-area-inset-bottom));
+  user-select:none;
+  -webkit-user-select:none;
+  overflow-x:hidden;
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:580px;margin:0 auto;}
+
+.game-header{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:5px 3px 13px;
+}
+.logo-mark{
+  width:42px;height:42px;display:grid;place-items:center;flex:0 0 42px;
+  border-radius:14px;
+  color:#1d1208;font-size:22px;font-weight:900;
+  background:linear-gradient(145deg,#ffd166,#ff8a3d 62%,#ef5b2a);
+  box-shadow:0 8px 22px rgba(255,138,61,.22),inset 0 1px 0 rgba(255,255,255,.5);
+}
+.eyebrow{font-size:9px;letter-spacing:1.4px;color:#6f7c91;font-weight:800;}
+.game-header h1{margin:2px 0 0;font-size:20px;letter-spacing:-.4px;line-height:1.05;}
+.live-dot{margin-left:auto;align-self:flex-start;margin-top:3px;padding:5px 8px;border:1px solid rgba(74,222,128,.28);border-radius:999px;color:#86efac;background:rgba(34,197,94,.08);font-size:9px;font-weight:900;letter-spacing:.8px;}
+.profile-open{margin-left:auto;align-self:flex-start;padding:6px 9px;border:1px solid rgba(125,211,252,.25);border-radius:9px;background:rgba(56,189,248,.08);color:#bae6fd;font:800 10px/1 inherit;cursor:pointer;}
+.profile-open:hover{background:rgba(56,189,248,.16);border-color:rgba(125,211,252,.55);}
+
+
+/* ---------- Система уровней и опыта ---------- */
+.level-hud{
+  background:linear-gradient(135deg,rgba(31,41,55,.92),rgba(15,23,42,.92));
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:9px 12px;
+  margin-bottom:10px;
+}
+.level-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:6px;
+}
+.level-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:13px;
+  font-weight:800;
+  color:#fde68a;
+}
+.level-pill{
+  background:linear-gradient(180deg,#ff9e3d,#ff6a1a);
+  color:#190e05;
+  font-size:11px;
+  font-weight:900;
+  padding:2px 8px;
+  border-radius:999px;
+}
+.xp-meta{
+  font-size:11.5px;
+  font-weight:700;
+  color:var(--dim);
+  font-variant-numeric:tabular-nums;
+}
+.xp-meta b{color:#eaeaf0;}
+.xp-bar{
+  height:8px;
+  background:#101017;
+  border-radius:999px;
+  overflow:hidden;
+  border:1px solid #2b2b38;
+}
+.xp-fill{
+  height:100%;
+  width:0%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#f59e0b,#fde047,#4ade80);
+  box-shadow:0 0 10px rgba(250,204,21,.35);
+  transition:width .16s ease-out;
+}
+.level-open{
+  margin-top:8px;
+  width:100%;
+  padding:7px 10px;
+  border:1px solid rgba(255,209,102,.2);
+  border-radius:9px;
+  background:rgba(255,255,255,.035);
+  color:#b9c4d4;
+  font:700 11px/1.2 inherit;
+  cursor:pointer;
+  transition:.15s ease;
+}
+.level-open:hover,.level-open:active{background:rgba(255,209,102,.1);border-color:rgba(255,209,102,.45);color:#ffe39a;}
+
+/* ---------- Меню пути уровней ---------- */
+.level-modal{
+  position:fixed;
+  inset:0;
+  z-index:80;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  padding:14px;
+  background:rgba(3,6,12,.72);
+  backdrop-filter:blur(8px);
+}
+.level-sheet{
+  width:min(560px,100%);
+  max-height:min(760px,92vh);
+  overflow:auto;
+  padding:16px;
+  border:1px solid rgba(255,209,102,.22);
+  border-radius:22px 22px 16px 16px;
+  background:linear-gradient(180deg,#182233,#0d131e);
+  box-shadow:0 24px 70px rgba(0,0,0,.65);
+  animation:sheetIn .22s ease-out both;
+}
+.level-modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px;}
+.level-modal-head h2{margin:0;font-size:19px;letter-spacing:-.3px;}
+.level-modal-head p{margin:4px 0 0;color:var(--dim);font-size:11px;line-height:1.4;}
+.level-close{width:32px;height:32px;border:1px solid var(--line);border-radius:10px;background:#111925;color:#cbd5e1;font-size:18px;cursor:pointer;}
+.level-summary{padding:10px 12px;margin-bottom:10px;border-radius:13px;background:rgba(255,209,102,.07);border:1px solid rgba(255,209,102,.16);color:#ffe39a;font-size:12px;font-weight:800;}
+.level-road{display:flex;flex-direction:column;gap:7px;}
+.level-tier{display:grid;grid-template-columns:36px 1fr auto;align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:14px;background:rgba(10,16,26,.58);opacity:.62;}
+.level-tier.current{opacity:1;border-color:#ffb347;background:linear-gradient(135deg,rgba(99,64,24,.58),rgba(23,28,38,.9));box-shadow:0 0 18px rgba(255,179,71,.12);}
+.level-tier.done{opacity:.88;border-color:rgba(74,222,128,.28);}
+.level-tier-icon{width:32px;height:32px;display:grid;place-items:center;border-radius:10px;background:#111925;font-size:18px;}
+.level-tier-name{font-size:13px;font-weight:800;color:#eef2f7;}
+.level-tier-desc{margin-top:2px;color:var(--dim);font-size:10.5px;}
+.level-tier-state{font-size:10px;font-weight:800;color:#9aa8bb;text-align:right;white-space:nowrap;}
+.level-tier.current .level-tier-state{color:#ffd166;}
+.level-tier.done .level-tier-state{color:#86efac;}
+.level-infinite{margin-top:10px;text-align:center;color:#8190a4;font-size:10.5px;}
+@keyframes sheetIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:none}}
+.profile-modal{position:fixed;inset:0;z-index:80;display:flex;align-items:flex-end;justify-content:center;padding:14px;background:rgba(3,6,12,.72);backdrop-filter:blur(8px);}
+.profile-sheet{width:min(560px,100%);max-height:min(760px,92vh);overflow:auto;padding:16px;border:1px solid rgba(125,211,252,.22);border-radius:22px 22px 16px 16px;background:linear-gradient(180deg,#172536,#0c141f);box-shadow:0 24px 70px rgba(0,0,0,.65);animation:sheetIn .22s ease-out both;}
+.profile-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px;}
+.profile-head h2{margin:0;font-size:19px;}
+.profile-head p{margin:4px 0 0;color:var(--dim);font-size:11px;line-height:1.4;}
+.profile-form{display:flex;gap:8px;margin-bottom:10px;}
+.profile-form input{min-width:0;flex:1;padding:10px 11px;border:1px solid rgba(125,211,252,.22);border-radius:10px;background:#0b1420;color:#eef6ff;font:600 13px inherit;outline:none;}
+.profile-form input:focus{border-color:#38bdf8;box-shadow:0 0 0 3px rgba(56,189,248,.1);}
+.profile-save{padding:10px 13px;border:0;border-radius:10px;background:linear-gradient(180deg,#7dd3fc,#0ea5e9);color:#061b29;font:800 12px inherit;cursor:pointer;}
+.profile-status{min-height:16px;color:#8fa6bb;font-size:11px;margin-bottom:10px;}
+.profile-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;}
+.profile-stat{padding:10px;border:1px solid var(--line);border-radius:12px;background:rgba(7,14,24,.55);}
+.profile-stat b{display:block;color:#dff5ff;font-size:16px;}
+.profile-stat span{color:var(--dim);font-size:10px;}
+
+/* ---------- Статистика ---------- */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-bottom:14px;
+}
+.stat{
+  position:relative;
+  background:linear-gradient(180deg,rgba(20,29,43,.98),rgba(13,18,28,.98));
+  border-radius:14px;
+  padding:9px 6px;
+  text-align:center;
+  border:1px solid var(--line);
+  box-shadow:0 8px 18px rgba(0,0,0,.12);
+}
+.stat .label{
+  font-size:10px;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  color:var(--dim);
+  margin-bottom:3px;
+}
+.stat .value{
+  font-size:17px;
+  font-weight:800;
+  color:var(--accent2);
+  font-variant-numeric:tabular-nums;
+}
+
+/* ---------- Зона курения / парения ---------- */
+.smoke-area{
+  position:relative;
+  background:radial-gradient(ellipse at 75% 45%, #262530 0%, #181820 75%);
+  border:1px solid rgba(255,138,61,.22);
+  border-radius:18px;
+  padding:47px 14px 18px;
+  margin:0 -10px 14px;
+  overflow:hidden;
+  touch-action:manipulation;
+  transition:border-color .25s ease, box-shadow .25s ease;
+}
+.scene-label{
+  position:absolute;left:14px;top:13px;z-index:5;
+  display:inline-flex;align-items:center;gap:7px;
+  color:#aab6c8;font-size:10px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+}
+.scene-label::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);}
+.smoke-area.pod-mode{
+  background:radial-gradient(ellipse at 50% 42%, #1a283a 0%, #111722 75%);
+  border-color:#2b3d52;
+}
+.smoke-area.puff{
+  transform:scale(.995);
+  box-shadow:inset 0 0 28px rgba(255,130,45,.14);
+}
+.smoke-area.pod-mode.puff{
+  box-shadow:inset 0 0 32px rgba(56,189,248,.18);
+}
+
+/* Canvas для живого реалистичного дыма, языков пламени, искр, летящего окурка и облаков пара */
+#smokeCanvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  z-index:4;
+}
+
+.cig-wrap{
+  position:relative;
+  width:82%;
+  max-width:440px;
+  height:92px;
+  margin:0 auto 16px;
+  transition:transform .11s cubic-bezier(.2,1.6,.4,1);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:2;
+}
+.smoke-area.puff .cig-wrap{transform:scale(.968) translateX(-2px);}
+
+/* ---------- Стопка сигарет (закреплена слева, тает справа) ---------- */
+.cig-stack{
+  position:relative;
+  width:100%;
+  height:100%;
+}
+.cig{
+  position:absolute;
+  left:0;
+  top:50%;
+  transform:translateY(-50%) translateX(0px);
+  transform-origin:22% 50%;
+  height:34px;
+  width:100%;
+  display:flex;
+  border-radius:6px;
+  box-shadow:0 8px 20px rgba(0,0,0,.65);
+  --filter-w:84px;
+  --paper-bg:linear-gradient(180deg,#ffffff 0%,#f2f2f2 40%,#d8d8d8 100%);
+  --filter-bg:linear-gradient(180deg,#f3c07a 0%,#d3903a 55%,#a96a22 100%);
+}
+.cig.compact{
+  height:22px;
+  border-radius:5px;
+  box-shadow:0 4px 12px rgba(0,0,0,.6);
+}
+.cig.burnout{ filter:brightness(1.32) saturate(1.22); }
+.cig.hidden-flick{ opacity:0; pointer-events:none; }
+
+.filter{
+  flex:0 0 var(--filter-w,84px);
+  height:100%;
+  border-radius:7px 0 0 7px;
+  background:var(--filter-bg);
+  box-shadow:inset -3px 0 6px rgba(0,0,0,.22);
+  position:relative;
+}
+.filter::after{
+  content:'';
+  position:absolute;
+  right:4px;top:4px;bottom:4px;width:2px;
+  background:rgba(255,255,255,.18);
+  border-radius:2px;
+}
+.paper{
+  flex:1 1 auto;
+  height:100%;
+  min-width:0;
+  border-radius:0 5px 5px 0;
+  background:var(--paper-bg);
+  box-shadow:inset 0 -3px 6px rgba(0,0,0,.14);
+  position:relative;
+  overflow:hidden;
+}
+/* Обугленная кромка бумаги перед пеплом */
+.paper::after{
+  content:'';
+  position:absolute;right:0;top:0;bottom:0;width:18px;
+  background:linear-gradient(90deg,
+    rgba(90,45,10,0) 0%,
+    rgba(135,62,14,.52) 52%,
+    rgba(28,15,9,.94) 100%);
+}
+.paper::before{
+  content:'';
+  position:absolute;left:0;top:0;bottom:0;width:0;
+}
+
+/* Текстурный тлеющий кончик и пепельная корка (основное пламя рисуется на Canvas!) */
+.ember{
+  position:absolute;
+  right:-10px;
+  top:2px;
+  width:13px;
+  height:34px;
+  border-radius:35% 65% 60% 40% / 45% 50% 50% 55%;
+  background:
+    radial-gradient(ellipse at 24% 50%, #fffbe0 0%, #ffc04b 20%, #ed5a16 52%, #7f2412 76%, #34323a 94%);
+  box-shadow:
+    0 0 9px rgba(255,145,35,.75),
+    0 0 18px rgba(255,70,12,.34),
+    inset -3px 0 5px rgba(20,18,22,.85);
+  pointer-events:none;
+  transition:transform .09s ease, filter .09s ease, opacity .12s ease;
+}
+.cig.no-ember .ember{
+  opacity:0;
+}
+.smoke-area.puff .ember{
+  transform:scale(1.22, 1.1);
+  filter:brightness(1.35);
+}
+
+/* ---------- Пачка сигарет для анимации «достают из пачки» ---------- */
+.pack-prop{
+  position:absolute;
+  right:6px;
+  top:50%;
+  transform:translateY(-50%) translateX(110px);
+  width:76px;
+  height:90px;
+  border-radius:9px;
+  background:linear-gradient(155deg,#2e303e 0%,#181922 65%,#0d0e13 100%);
+  border:1.5px solid rgba(255,179,71,.65);
+  box-shadow:0 14px 28px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.22);
+  opacity:0;
+  pointer-events:none;
+  z-index:3;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  padding:7px 8px;
+  transition:transform .48s cubic-bezier(.22,1,.36,1), opacity .35s ease;
+}
+.pack-prop.visible{
+  opacity:1;
+  transform:translateY(-50%) translateX(0px);
+}
+.pack-prop .pk-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:4px;
+}
+.pack-prop .pk-sticks{
+  display:flex;
+  gap:3px;
+  height:14px;
+  padding:0 3px;
+}
+.pack-prop .pk-sticks span{
+  flex:1;
+  border-radius:2px 2px 0 0;
+  background:linear-gradient(180deg,#f5c27b 0%,#d4913b 45%,#f4f4f6 45%,#dcdce2 100%);
+  box-shadow:0 -1px 3px rgba(0,0,0,.4);
+}
+.pack-prop .pk-lid{
+  height:12px;
+  border-radius:4px 4px 2px 2px;
+  background:linear-gradient(180deg,var(--accent2),var(--accent));
+  opacity:.95;
+}
+.pack-prop .pk-band{
+  height:20px;
+  border-radius:5px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.14);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.6px;
+  color:var(--accent2);
+  text-transform:uppercase;
+}
+.pack-prop .pk-foil{
+  height:7px;
+  border-radius:2px;
+  background:linear-gradient(90deg,#cbd5e1,#f8fafc,#94a3b8);
+  opacity:.85;
+}
+
+/* ---------- Уникальные модели подиков ---------- */
+.pod-stage{
+  display:none;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  width:100%;
+  height:100%;
+}
+.smoke-area.pod-mode .cig{display:none;}
+.smoke-area.pod-mode .pack-prop{display:none;}
+.smoke-area.pod-mode .pod-stage{display:flex;}
+
+.pod-rig{
+  position:relative;
+  display:flex;
+  align-items:center;
+  transition:all .2s ease;
+}
+
+/* 1. Pod Mini — тонкий стик */
+.pod-rig.model-pod_mini{
+  height:32px;
+  padding:4px 12px 4px 8px;
+  border-radius:9px;
+  background:linear-gradient(180deg,#475569 0%,#1e293b 55%,#0f172a 100%);
+  border:1px solid #64748b;
+  box-shadow:0 8px 20px rgba(0,0,0,.65);
+  gap:8px;
+}
+.pod-rig.model-pod_mini .p-tip{
+  width:24px;height:20px;border-radius:5px 2px 2px 5px;
+  background:#090d16;border:1px solid #334155;
+}
+.pod-rig.model-pod_mini .p-tank{
+  width:38px;height:18px;border-radius:4px;
+  background:rgba(15,23,42,.9);border:1px solid #475569;overflow:hidden;position:relative;
+}
+.pod-rig.model-pod_mini .p-body-decor{
+  width:95px;height:16px;border-radius:4px;
+  background:linear-gradient(90deg,rgba(255,255,255,.06),transparent);
+  display:flex;align-items:center;justify-content:flex-end;padding-right:6px;
+}
+.pod-rig.model-pod_mini .p-screen{display:none;}
+
+/* 2. Vaporesso Xros */
+.pod-rig.model-pod_xros{
+  height:42px;
+  padding:5px 14px 5px 8px;
+  border-radius:12px;
+  background:linear-gradient(180deg,#34d399 0%,#059669 48%,#064e3b 100%);
+  border:1px solid #6ee7b7;
+  box-shadow:0 10px 25px rgba(5,150,105,.35), 0 8px 22px rgba(0,0,0,.65);
+  gap:9px;
+}
+.pod-rig.model-pod_xros .p-tip{
+  width:22px;height:26px;border-radius:8px 3px 3px 8px;
+  background:linear-gradient(180deg,#1e293b,#090d16);border:1px solid #334155;
+}
+.pod-rig.model-pod_xros .p-tank{
+  width:42px;height:24px;border-radius:5px;
+  background:rgba(6,78,59,.85);border:1px solid #a7f3d0;overflow:hidden;position:relative;
+}
+.pod-rig.model-pod_xros .p-body-decor{
+  width:110px;height:26px;border-radius:6px;
+  background:repeating-linear-gradient(90deg,rgba(0,0,0,.18) 0 3px,transparent 3px 6px);
+  display:flex;align-items:center;justify-content:space-between;padding:0 8px;
+}
+.pod-rig.model-pod_xros .p-screen{display:none;}
+
+/* 3. Voopoo Drag Box */
+.pod-rig.model-pod_drag{
+  height:56px;
+  padding:6px 16px 6px 10px;
+  border-radius:16px;
+  background:linear-gradient(180deg,#b45309 0%,#78350f 52%,#451a03 100%);
+  border:2px solid #fbbf24;
+  box-shadow:0 12px 28px rgba(245,158,11,.3), 0 10px 24px rgba(0,0,0,.7);
+  gap:10px;
+}
+.pod-rig.model-pod_drag .p-tip{
+  width:20px;height:22px;border-radius:6px 2px 2px 6px;
+  background:#1c1917;border:1px solid #78716c;
+}
+.pod-rig.model-pod_drag .p-tank{
+  width:46px;height:36px;border-radius:8px;
+  background:rgba(28,25,23,.9);border:1px solid #fcd34d;overflow:hidden;position:relative;
+}
+.pod-rig.model-pod_drag .p-body-decor{
+  width:128px;height:38px;border-radius:9px;
+  background:linear-gradient(180deg,#292524,#1c1917);
+  border:1px solid #d97706;
+  display:flex;align-items:center;justify-content:space-between;padding:0 8px;
+}
+.pod-rig.model-pod_drag .p-screen{
+  display:flex;flex-direction:column;justify-content:center;
+  width:56px;height:24px;border-radius:4px;
+  background:#090d16;border:1px solid #fbbf24;
+  color:#fbbf24;font-size:9px;font-weight:800;text-align:center;line-height:1.1;
+}
+
+/* 4. GeekVape Aegis */
+.pod-rig.model-pod_aegis{
+  height:60px;
+  padding:6px 18px 6px 10px;
+  border-radius:20px 14px 14px 20px;
+  background:linear-gradient(180deg,#334155 0%,#0f172a 55%,#020617 100%);
+  border:2px solid #38bdf8;
+  box-shadow:0 0 22px rgba(56,189,248,.35), 0 10px 24px rgba(0,0,0,.75);
+  gap:10px;
+}
+.pod-rig.model-pod_aegis .p-tip{
+  width:24px;height:26px;border-radius:10px 3px 3px 10px;
+  background:#020617;border:1px solid #38bdf8;
+}
+.pod-rig.model-pod_aegis .p-tank{
+  width:50px;height:38px;border-radius:9px;
+  background:rgba(2,6,23,.9);border:1px solid #7dd3fc;overflow:hidden;position:relative;
+}
+.pod-rig.model-pod_aegis .p-body-decor{
+  width:136px;height:40px;border-radius:12px;
+  background:linear-gradient(135deg,#1e293b 0%,#0f172a 60%,#1d4ed8 100%);
+  border:1px solid #60a5fa;
+  display:flex;align-items:center;justify-content:space-between;padding:0 9px;
+}
+.pod-rig.model-pod_aegis .p-screen{
+  display:flex;flex-direction:column;justify-content:center;
+  width:64px;height:26px;border-radius:5px;
+  background:#020617;border:1px solid #38bdf8;
+  color:#38bdf8;font-size:9px;font-weight:800;text-align:center;line-height:1.1;
+}
+
+/* 5. Cyber Mech Mod */
+.pod-rig.model-pod_cyber{
+  height:64px;
+  padding:6px 18px 6px 10px;
+  border-radius:18px;
+  background:linear-gradient(135deg,#3b0764 0%,#1e1b4b 50%,#311042 100%);
+  border:2px solid #e879f9;
+  box-shadow:0 0 28px rgba(232,121,249,.45), 0 10px 26px rgba(0,0,0,.8);
+  gap:10px;
+}
+.pod-rig.model-pod_cyber .p-tip{
+  width:26px;height:28px;border-radius:12px 4px 4px 12px;
+  background:linear-gradient(180deg,#f0abfc,#a21caf);border:1px solid #fdf4ff;
+}
+.pod-rig.model-pod_cyber .p-tank{
+  width:54px;height:42px;border-radius:10px;
+  background:rgba(24,10,45,.9);border:1px solid #f0abfc;overflow:hidden;position:relative;
+}
+.pod-rig.model-pod_cyber .p-body-decor{
+  width:146px;height:44px;border-radius:12px;
+  background:
+    radial-gradient(circle at 75% 50%, rgba(232,121,249,.35), transparent 55%),
+    linear-gradient(90deg,#1e1b4b,#090d16);
+  border:1px solid #d946ef;
+  display:flex;align-items:center;justify-content:space-between;padding:0 10px;
+}
+.pod-rig.model-pod_cyber .p-screen{
+  display:flex;flex-direction:column;justify-content:center;
+  width:70px;height:28px;border-radius:6px;
+  background:#090514;border:1px solid #e879f9;
+  color:#f5d0fe;font-size:9px;font-weight:800;text-align:center;line-height:1.1;
+}
+
+.p-juice{
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:100%;
+  background:linear-gradient(90deg,var(--pod-color,#38bdf8),#e0f2fe);
+  transition:width .12s ease;
+}
+.p-led{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:var(--pod-color,#38bdf8);
+  box-shadow:0 0 10px var(--pod-color,#38bdf8);
+  transition:transform .1s ease;
+}
+.smoke-area.puff .p-led{
+  transform:scale(1.55);
+  box-shadow:0 0 22px var(--pod-color,#38bdf8), 0 0 40px var(--pod-color,#38bdf8);
+}
+
+/* ---------- Текстуры брендов сигарет ---------- */
+.brand-prima{
+  --paper-bg:linear-gradient(180deg,#ffffff 0%,#f4f4f4 42%,#d9d9d9 100%);
+  --filter-bg:linear-gradient(180deg,#f3c07a 0%,#d3903a 55%,#a96a22 100%);
+}
+.brand-rodopi{
+  --paper-bg:
+    repeating-linear-gradient(90deg,rgba(120,90,40,.11) 0 2px,transparent 2px 7px),
+    linear-gradient(180deg,#f6e8cc 0%,#efdcb6 50%,#dcc492 100%);
+  --filter-bg:linear-gradient(180deg,#e8d3a8 0%,#c9a86a 55%,#a07c3e 100%);
+}
+.brand-mentol{
+  --paper-bg:
+    repeating-linear-gradient(135deg,rgba(40,170,90,.17) 0 6px,transparent 6px 14px),
+    linear-gradient(180deg,#ffffff 0%,#f4fff6 50%,#dcefe0 100%);
+  --filter-bg:linear-gradient(180deg,#8ee6a8 0%,#39b866 55%,#1f7f42 100%);
+}
+.brand-sobranie{
+  --paper-bg:
+    linear-gradient(180deg,transparent 0 38%,rgba(180,30,50,.55) 38% 62%,transparent 62%),
+    linear-gradient(180deg,#ffffff 0%,#f3f3f6 45%,#dcdce4 100%);
+  --filter-bg:linear-gradient(180deg,#b03a48 0%,#7c1f2c 55%,#4e1119 100%);
+}
+.brand-parlament{
+  --paper-bg:
+    repeating-linear-gradient(90deg,rgba(0,0,0,.045) 0 1px,transparent 1px 5px),
+    repeating-linear-gradient(0deg,rgba(0,0,0,.03) 0 1px,transparent 1px 6px),
+    linear-gradient(180deg,#ffffff 0%,#f0f0f3 50%,#d6d6da 100%);
+  --filter-bg:linear-gradient(180deg,#3a3f55 0%,#232739 55%,#14161f 100%);
+}
+.brand-dunhill{
+  --paper-bg:
+    repeating-linear-gradient(90deg,rgba(20,30,80,.15) 0 1px,transparent 1px 4px),
+    linear-gradient(180deg,#ffffff 0%,#f1f1f4 50%,#d6d6dc 100%);
+  --filter-bg:linear-gradient(180deg,#2a2a33 0%,#15151c 55%,#0a0a10 100%);
+}
+.brand-cuba{
+  --paper-bg:
+    repeating-linear-gradient(115deg,rgba(60,30,10,.18) 0 3px,transparent 3px 9px),
+    linear-gradient(180deg,#c99a63 0%,#b07f45 50%,#8a5f30 100%);
+  --filter-bg:linear-gradient(180deg,#6b4626 0%,#4a2e16 55%,#2e1c0c 100%);
+}
+.brand-davidoff{
+  --paper-bg:
+    repeating-linear-gradient(120deg,rgba(255,255,255,.13) 0 2px,transparent 2px 8px),
+    linear-gradient(180deg,#3a3d47 0%,#23252d 55%,#121318 100%);
+  --filter-bg:linear-gradient(180deg,#1d1f26 0%,#0c0d11 55%,#050608 100%);
+}
+.brand-gold{
+  --paper-bg:linear-gradient(100deg,#f7e3a0 0%,#fff8d8 22%,#e8c463 45%,#fff3c0 62%,#dcb244 82%,#f7e3a0 100%);
+  --filter-bg:linear-gradient(180deg,#ffe9a8 0%,#e0b445 50%,#a97c1c 100%);
+}
+.brand-diamond{
+  --paper-bg:
+    repeating-linear-gradient(135deg,rgba(120,200,255,.30) 0 3px,transparent 3px 9px),
+    linear-gradient(120deg,#eaf8ff 0%,#ffffff 30%,#cfeaff 55%,#ffffff 75%,#eaf8ff 100%);
+  --filter-bg:linear-gradient(180deg,#b8ecff 0%,#5bb8e0 55%,#1f6f96 100%);
+}
+.brand-cosmic{
+  --paper-bg:
+    radial-gradient(circle at 15% 35%, rgba(255,255,255,.95) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 45% 70%, rgba(255,255,255,.85) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 72% 28%, rgba(255,255,255,.8) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 88% 62%, rgba(255,255,255,.75) 0 1px, transparent 1.6px),
+    linear-gradient(180deg,#1c0e3a 0%,#301a5e 45%,#0f0725 100%);
+  --filter-bg:linear-gradient(180deg,#a06cff 0%,#5b2ecc 55%,#2a1070 100%);
+}
+.brand-eternal{
+  --paper-bg:linear-gradient(100deg,#ff9ce0 0%,#ffe08a 22%,#9ce8ff 45%,#c8a2ff 65%,#ffb3c8 82%,#ff9ce0 100%);
+  --filter-bg:linear-gradient(180deg,#fff2b0 0%,#ffb0e0 55%,#a080ff 100%);
+}
+
+.cig.brand-parlament .paper::before,
+.cig.brand-dunhill .paper::before{
+  width:10px;
+  background:linear-gradient(90deg,#b8901f,#ffe9a8,#b8901f);
+}
+.cig.brand-gold .paper{background-size:220% 100%;animation:shimmer 3.2s linear infinite;}
+.cig.brand-gold .paper::before{width:8px;background:linear-gradient(90deg,#a87c18,#fff3c0,#a87c18);}
+.cig.brand-diamond .paper{background-size:200% 100%;animation:shimmer 4s linear infinite;}
+.cig.brand-eternal .paper{background-size:240% 100%;animation:shimmer 3s linear infinite;}
+.cig.brand-cosmic .paper::after{width:20px;background:linear-gradient(90deg,rgba(120,80,200,0),rgba(160,110,255,.55));}
+@keyframes shimmer{
+  from{background-position:0% 0;}
+  to{background-position:220% 0;}
+}
+
+/* прогресс */
+.bar{
+  height:14px;
+  background:#101018;
+  border-radius:10px;
+  overflow:hidden;
+  border:1px solid #2e2e3a;
+  position:relative;
+  z-index:2;
+}
+.fill{
+  height:100%;
+  width:0%;
+  border-radius:10px;
+  background:linear-gradient(90deg,#ff7b2e,#ffb347,#ffe08a);
+  box-shadow:0 0 12px rgba(255,140,50,.65);
+  transition:width .06s linear;
+}
+.smoke-area.pod-mode .fill{
+  background:linear-gradient(90deg,#0284c7,#38bdf8,#bae6fd);
+  box-shadow:0 0 12px rgba(56,189,248,.65);
+}
+.hint{
+  text-align:center;
+  font-size:12px;
+  color:var(--dim);
+  margin-top:10px;
+  line-height:1.4;
+  position:relative;
+  z-index:2;
+}
+
+/* всплывающие +N */
+.pop{
+  position:absolute;
+  top:34%;
+  font-weight:900;
+  font-size:18px;
+  color:#ffd76a;
+  text-shadow:0 2px 8px rgba(0,0,0,.85);
+  pointer-events:none;
+  animation:popUp .95s ease-out forwards;
+  z-index:6;
+}
+.pop.crit{
+  color:#ff5c5c;
+  font-size:24px;
+  text-shadow:0 0 14px rgba(255,60,60,.9),0 2px 8px rgba(0,0,0,.9);
+}
+@keyframes popUp{
+  0%{transform:translateY(0) scale(.7);opacity:0;}
+  20%{transform:translateY(-12px) scale(1.18);opacity:1;}
+  100%{transform:translateY(-74px) scale(1);opacity:0;}
+}
+
+/* ---------- Табы ---------- */
+.tabs{
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:5px;
+  margin-bottom:10px;
+}
+.tab{
+  min-width:0;
+  padding:10px 3px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--dim);
+  font-size:12px;
+  font-weight:700;
+  font-family:inherit;
+  cursor:pointer;
+  transition:.15s;
+  white-space:nowrap;
+}
+.tab.active{
+  background:linear-gradient(180deg,#3a2a1c,#2a1e14);
+  border-color:var(--accent);
+  color:var(--accent2);
+}
+.tab.pod-tab.active{
+  background:linear-gradient(180deg,#16324a,#112334);
+  border-color:var(--pod);
+  color:#7dd3fc;
+}
+.tab.locked{opacity:.55;}
+
+.level-banner{
+  background:linear-gradient(180deg,#182838,#131d29);
+  border:1px solid #2b4c6b;
+  border-radius:14px;
+  padding:10px 12px;
+  margin-bottom:8px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  font-size:12px;
+}
+.level-banner b{color:#7dd3fc;}
+.mode-switch{
+  padding:6px 10px;
+  border-radius:9px;
+  border:1px solid #38bdf8;
+  background:#0f2942;
+  color:#bae6fd;
+  font-size:11px;
+  font-weight:700;
+  cursor:pointer;
+  flex-shrink:0;
+}
+
+/* ---------- Списки ---------- */
+.list{display:flex;flex-direction:column;gap:8px;}
+.hidden{display:none !important;}
+
+.item{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  background:var(--card);
+  border:1px solid #2e2e3a;
+  border-radius:14px;
+  padding:11px 12px;
+}
+.item.current{
+  border-color:var(--accent);
+  background:linear-gradient(180deg,#2b2118,#211a14);
+}
+.item.current.pod-card{
+  border-color:var(--pod);
+  background:linear-gradient(180deg,#172736,#131e29);
+}
+.item .icon{
+  font-size:22px;
+  width:36px;
+  height:36px;
+  flex:0 0 36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#15151d;
+  border-radius:10px;
+}
+.item .icon.brand-preview{
+  width:66px;
+  flex:0 0 66px;
+}
+.mini-cig{
+  display:flex;
+  width:58px;
+  height:12px;
+  border-radius:2.5px;
+  overflow:hidden;
+  box-shadow:0 1px 4px rgba(0,0,0,.6);
+}
+.mini-cig .m-filter{
+  flex:0 0 30%;
+  background:var(--filter-bg,#d3903a);
+}
+.mini-cig .m-paper{
+  flex:1;
+  background:var(--paper-bg,#fff);
+}
+.mini-cig.brand-gold .m-paper,
+.mini-cig.brand-diamond .m-paper,
+.mini-cig.brand-eternal .m-paper{
+  background-size:220% 100%;
+  animation:shimmer 3.5s linear infinite;
+}
+
+/* Мини-модельки подиков в списке */
+.mini-pod{
+  display:flex;
+  align-items:center;
+  gap:3px;
+  padding:3px 6px;
+  border-radius:6px;
+  background:#1e293b;
+  border:1px solid #64748b;
+}
+.mini-pod.m-pod_mini{width:54px;height:14px;border-radius:4px;}
+.mini-pod.m-pod_xros{width:56px;height:18px;border-radius:6px;background:#065f46;border-color:#34d399;}
+.mini-pod.m-pod_drag{width:58px;height:24px;border-radius:8px;background:#78350f;border-color:#fbbf24;}
+.mini-pod.m-pod_aegis{width:60px;height:26px;border-radius:10px;background:#0f172a;border-color:#38bdf8;}
+.mini-pod.m-pod_cyber{width:62px;height:28px;border-radius:9px;background:#3b0764;border-color:#e879f9;}
+.mini-pod i{display:block;height:65%;border-radius:2px;}
+.mini-pod .mp-tip{width:8px;background:#090d16;}
+.mini-pod .mp-tank{width:14px;background:var(--pod-c,#38bdf8);}
+.mini-pod .mp-body{flex:1;background:rgba(255,255,255,.15);}
+
+.item .info{flex:1;min-width:0;}
+.item .name{
+  font-size:14px;
+  font-weight:700;
+  margin-bottom:2px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.item .desc{
+  font-size:11.5px;
+  color:var(--dim);
+  line-height:1.35;
+}
+.buy{
+  flex:0 0 auto;
+  min-width:88px;
+  padding:9px 10px;
+  border-radius:11px;
+  border:none;
+  font-family:inherit;
+  font-size:13px;
+  font-weight:800;
+  color:#1a1208;
+  background:linear-gradient(180deg,#ffc46b,#ff8c2e);
+  cursor:pointer;
+  transition:.12s;
+  touch-action:manipulation;
+}
+.buy.pod-buy{
+  background:linear-gradient(180deg,#7dd3fc,#0ea5e9);
+  color:#061b29;
+}
+.buy:disabled{
+  background:#2b2b36;
+  color:#5d5d70;
+  cursor:default;
+}
+.buy:not(:disabled):active{transform:scale(.94);}
+.buy.maxed{
+  background:linear-gradient(180deg,#5ee68c,#31b968);
+  color:#08210f;
+}
+
+/* ---------- Достижения ---------- */
+.item.ach{opacity:.55;transition:opacity .25s;}
+.item.ach.done{
+  opacity:1;
+  border-color:#3f7a4f;
+  background:linear-gradient(180deg,#1d2a20,#182018);
+}
+.item.ach.done .icon{background:#12281a;}
+.ach-status{
+  flex:0 0 auto;
+  font-size:18px;
+  width:26px;
+  text-align:center;
+}
+.ach-reward{
+  color:var(--accent2);
+  font-weight:800;
+}
+.ach-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.5px;
+  color:var(--dim);
+  padding:2px 4px 6px;
+}
+.ach-head b{color:var(--accent2);}
+
+
+/* ---------- Зона кальянов ---------- */
+.smoke-area.hookah-mode{
+  background:radial-gradient(ellipse at 50% 45%, #2a1836 0%, #120c18 78%);
+  border-color:#5b3375;
+}
+.smoke-area.hookah-mode.puff{
+  box-shadow:inset 0 0 34px rgba(192,132,252,.22);
+}
+.smoke-area.hookah-mode .cig,
+.smoke-area.hookah-mode .pack-prop,
+.smoke-area.hookah-mode .pod-stage{display:none;}
+.smoke-area.hookah-mode .hookah-stage{display:flex;}
+.smoke-area.hookah-mode .fill{
+  background:linear-gradient(90deg,#9333ea,#c084fc,#f5d0fe);
+  box-shadow:0 0 12px rgba(192,132,252,.7);
+}
+
+.hookah-stage{
+  display:none;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  width:100%;
+  height:100%;
+}
+.smoke-area.hookah-mode .cig-wrap{
+  height:146px;
+}
+
+.hookah-rig{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-end;
+  height:144px;
+  transition:transform .14s ease, filter .2s ease;
+}
+.smoke-area.hookah-mode.puff .hookah-rig{
+  transform:scale(1.03);
+}
+
+.h-top-stack{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  position:relative;
+  z-index:4;
+}
+.h-coal-zone{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  height:11px;
+  margin-bottom:-2px;
+  z-index:5;
+}
+.h-coal{
+  width:7px;
+  height:7px;
+  border-radius:2px;
+  background:radial-gradient(circle at 35% 35%, #fff7c2 0%, #ff6a00 60%, #450a03 100%);
+  box-shadow:0 0 8px rgba(255,115,0,.9);
+  transition:transform .1s ease, filter .1s ease;
+}
+.smoke-area.hookah-mode.puff .h-coal{
+  transform:scale(1.25);
+  filter:brightness(1.35);
+}
+.h-hmd{
+  width:22px;
+  height:6px;
+  border-radius:3px 3px 1px 1px;
+  background:linear-gradient(180deg,#cbd5e1,#64748b);
+  border:1px solid rgba(255,255,255,.35);
+  margin-bottom:-1px;
+}
+.h-bowl{
+  width:28px;
+  height:13px;
+  border-radius:3px 3px 11px 11px;
+  background:linear-gradient(180deg,#c2591e,#6e2609);
+  border:1.5px solid rgba(255,255,255,.22);
+  box-shadow:0 3px 8px rgba(0,0,0,.65);
+}
+.h-tray{
+  width:46px;
+  height:4px;
+  border-radius:999px;
+  background:linear-gradient(180deg,#f8fafc,#94a3b8 60%,#475569);
+  box-shadow:0 2px 6px rgba(0,0,0,.6);
+  margin-top:-1px;
+  z-index:3;
+}
+.h-shaft-row{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:42px;
+  width:96px;
+}
+.h-stem{
+  position:relative;
+  width:10px;
+  height:44px;
+  margin-top:-2px;
+  border-radius:3px;
+  background:linear-gradient(90deg,#64748b 0%,#f8fafc 45%,#94a3b8 80%,#334155 100%);
+  box-shadow:0 2px 8px rgba(0,0,0,.55);
+  z-index:2;
+}
+.h-purge{
+  position:absolute;
+  right:-6px;
+  top:14px;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#e2e8f0;
+  box-shadow:0 0 6px rgba(255,255,255,.5);
+}
+.h-hose-wrap{
+  position:absolute;
+  right:53px;
+  top:14px;
+  display:flex;
+  align-items:center;
+}
+.h-hose-port{
+  width:7px;
+  height:8px;
+  border-radius:2px 0 0 2px;
+  background:#94a3b8;
+  border:1px solid rgba(255,255,255,.25);
+}
+.h-hose-tube{
+  width:28px;
+  height:22px;
+  border:3.5px solid #27272f;
+  border-right:none;
+  border-top:none;
+  border-radius:0 0 0 14px;
+  box-shadow:-1px 2px 5px rgba(0,0,0,.55);
+}
+.h-neck{
+  width:18px;
+  height:8px;
+  margin-top:-2px;
+  background:linear-gradient(90deg,#475569,#cbd5e1 45%,#334155);
+  border-radius:2px 2px 0 0;
+  z-index:2;
+}
+.h-base{
+  position:relative;
+  width:56px;
+  height:54px;
+  margin-top:-1px;
+  border-radius:14px 14px 24px 24px;
+  background:linear-gradient(160deg,rgba(255,255,255,.22) 0%,rgba(255,255,255,.05) 45%,rgba(15,23,42,.82) 100%);
+  border:2px solid rgba(226,232,240,.42);
+  box-shadow:0 8px 20px rgba(0,0,0,.78), inset 0 0 12px rgba(255,255,255,.12);
+  overflow:hidden;
+}
+.h-water{
+  position:absolute;
+  left:0;right:0;bottom:0;
+  height:60%;
+  background:linear-gradient(180deg,var(--hookah-color,#c084fc),rgba(109,40,217,.88));
+  transition:height .14s ease, background .2s ease;
+}
+.h-glass-shine{
+  position:absolute;
+  top:5px;left:7px;
+  width:8px;height:36px;
+  border-radius:999px;
+  background:linear-gradient(180deg,rgba(255,255,255,.45),rgba(255,255,255,.04));
+  transform:rotate(-8deg);
+  pointer-events:none;
+}
+
+/* Индивидуальные модели кальянов */
+.hookah-rig.model-h_classic .h-bowl{background:linear-gradient(180deg,#d97706,#78350f);}
+.hookah-rig.model-h_classic .h-stem{background:linear-gradient(90deg,#78350f,#fbbf24 45%,#b45309 80%,#451a03 100%);}
+.hookah-rig.model-h_classic .h-tray{background:linear-gradient(180deg,#fde68a,#d97706 65%,#78350f);}
+
+.hookah-rig.model-h_alpha .h-bowl{background:linear-gradient(180deg,#334155,#0f172a);border-color:#38bdf8;}
+.hookah-rig.model-h_alpha .h-stem{background:linear-gradient(90deg,#0f172a,#e0f2fe 45%,#0284c7 80%,#082f49 100%);}
+.hookah-rig.model-h_alpha .h-base{border-color:#7dd3fc;}
+
+.hookah-rig.model-h_union .h-bowl{background:linear-gradient(180deg,#9a3412,#431407);border-color:#fb923c;}
+.hookah-rig.model-h_union .h-stem{width:12px;background:linear-gradient(90deg,#431407,#c2410c 35%,#7c2d12 70%,#270c04 100%);border-radius:4px;}
+.hookah-rig.model-h_union .h-base{width:54px;border-radius:10px 10px 26px 26px;border-color:#fdba74;}
+
+.hookah-rig.model-h_steam .h-bowl{background:linear-gradient(180deg,#1e293b,#020617);border-color:#34d399;}
+.hookah-rig.model-h_steam .h-stem{width:12px;background:linear-gradient(90deg,#064e3b,#d1fae5 45%,#059669 80%,#022c22 100%);}
+.hookah-rig.model-h_steam .h-tray{width:52px;}
+.hookah-rig.model-h_steam .h-base{width:60px;border-radius:22px 22px 24px 24px;border-color:#6ee7b7;box-shadow:0 0 22px rgba(52,211,153,.28),0 8px 20px rgba(0,0,0,.78);}
+
+.hookah-rig.model-h_royale .h-bowl{background:linear-gradient(180deg,#fef08a,#ca8a04);border-color:#fde047;}
+.hookah-rig.model-h_royale .h-stem{width:12px;background:linear-gradient(90deg,#713f12,#fef9c3 45%,#eab308 80%,#422006 100%);}
+.hookah-rig.model-h_royale .h-tray{width:54px;background:linear-gradient(180deg,#fef9c3,#eab308 65%,#854d0e);}
+.hookah-rig.model-h_royale .h-base{width:62px;height:58px;border-radius:26px 26px 26px 26px;border-color:#f5d0fe;box-shadow:0 0 28px rgba(244,114,182,.4),0 10px 24px rgba(0,0,0,.82);}
+
+.tab.hookah-tab.active{
+  background:linear-gradient(180deg,#361c4a,#221130);
+  border-color:#c084fc;
+  color:#e9d5ff;
+}
+.item.current.hookah-card{
+  border-color:#c084fc;
+  background:linear-gradient(180deg,#2a1838,#1c1126);
+}
+.buy.hookah-buy{
+  background:linear-gradient(180deg,#e9d5ff,#a855f7);
+  color:#1c092e;
+}
+.buy.hookah-buy.shortage{
+  background:#281c36;
+  color:#9c84b8;
+  border:1px solid #593b78;
+}
+.buy.hookah-buy:disabled:not(.maxed){
+  background:#262230;
+  color:#7c7291;
+  cursor:default;
+}
+.mini-hookah{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-end;
+  padding:2px 4px;
+  border-radius:7px;
+  background:#1b1224;
+  border:1px solid #9333ea;
+  width:46px;
+  height:34px;
+}
+.mini-hookah .mh-bowl{width:12px;height:5px;border-radius:1px 1px 4px 4px;background:#d97706;}
+.mini-hookah .mh-tray{width:18px;height:2px;border-radius:999px;background:#cbd5e1;}
+.mini-hookah .mh-stem{width:4px;height:9px;background:#94a3b8;}
+.mini-hookah .mh-base{width:18px;height:13px;border-radius:5px 5px 8px 8px;background:var(--hookah-c,#c084fc);border:1px solid rgba(255,255,255,.45);}
+
+/* ---------- Тост ---------- */
+.toasts{
+  position:fixed;
+  left:0;right:0;
+  top:calc(8px + env(safe-area-inset-top));
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  align-items:center;
+  pointer-events:none;
+  z-index:60;
+  padding:0 12px;
+}
+.toast{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:linear-gradient(180deg,#3d3018,#241c10);
+  border:1px solid var(--accent);
+  border-radius:14px;
+  padding:10px 14px;
+  box-shadow:0 10px 30px rgba(0,0,0,.7);
+  max-width:360px;
+  animation:toastIn .38s cubic-bezier(.2,1.5,.5,1) both;
+}
+.toast .t-icon{font-size:22px;}
+.toast .t-name{font-size:13px;font-weight:800;color:var(--accent2);}
+.toast .t-desc{font-size:11px;color:var(--dim);margin-top:1px;}
+.toast.out{animation:toastOut .3s ease-in forwards;}
+@keyframes toastIn{
+  from{transform:translateY(-26px) scale(.9);opacity:0;}
+  to{transform:none;opacity:1;}
+}
+@keyframes toastOut{
+  to{transform:translateY(-18px) scale(.95);opacity:0;}
+}
+
+.footer{
+  text-align:center;
+  font-size:11px;
+  color:#4a4a58;
+  margin-top:18px;
+}
+@media(max-width:420px){
+  body{padding-left:8px;padding-right:8px;}
+  .game-header h1{font-size:18px;}
+  .tabs{grid-template-columns:repeat(3,minmax(0,1fr));}
+  .tab{font-size:11px;padding:9px 2px;}
+  .smoke-area{margin-left:-8px;margin-right:-8px;}
+}
+.footer button{
+  background:none;border:none;color:#4a4a58;font-family:inherit;
+  font-size:11px;text-decoration:underline;cursor:pointer;padding:6px;
+}
+
+/* ---------- Новая линейка моделей подиков ---------- */
+.pod-stage{perspective:900px;}
+.pod-rig{position:relative;isolation:isolate;filter:drop-shadow(0 13px 18px rgba(0,0,0,.58));}
+.pod-rig::after{content:'';position:absolute;left:8%;right:8%;bottom:-18px;height:12px;border-radius:50%;background:rgba(0,0,0,.38);filter:blur(8px);z-index:-1;}
+.pod-rig .p-tip{position:relative;z-index:3;flex:0 0 auto;}
+.pod-rig .p-tank{position:relative;z-index:2;overflow:hidden;}
+.pod-rig .p-body-decor{position:relative;z-index:1;overflow:hidden;}
+.pod-rig .p-body-decor::after{content:'';position:absolute;inset:1px;background:linear-gradient(115deg,rgba(255,255,255,.22),transparent 24%,transparent 68%,rgba(0,0,0,.28));pointer-events:none;}
+
+/* 1. Mini — лёгкий цельный стик */
+.pod-rig.model-pod_mini{
+  height:34px;padding:4px 10px 4px 7px;gap:6px;border:1px solid #94a3b8;
+  border-radius:10px 15px 15px 10px;background:linear-gradient(180deg,#64748b,#334155 48%,#172033);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 -5px 10px rgba(0,0,0,.25),0 8px 18px rgba(0,0,0,.5);
+}
+.pod-rig.model-pod_mini .p-tip{width:18px;height:22px;border-radius:6px 2px 2px 6px;background:linear-gradient(90deg,#020617,#1e293b);border:1px solid #0f172a;}
+.pod-rig.model-pod_mini .p-tank{width:38px;height:22px;border-radius:5px;background:linear-gradient(90deg,rgba(125,211,252,.12),rgba(224,242,254,.5),rgba(56,189,248,.12));border:1px solid rgba(186,230,253,.7);}
+.pod-rig.model-pod_mini .p-body-decor{width:86px;height:22px;border-radius:7px;background:linear-gradient(90deg,#334155,#1e293b);border:1px solid #64748b;}
+.pod-rig.model-pod_mini .p-led{width:6px;height:6px;box-shadow:0 0 8px var(--pod-color);}
+
+/* 2. Xros — стеклянный картридж и округлый корпус */
+.pod-rig.model-pod_xros{
+  height:48px;padding:6px 12px 6px 8px;gap:8px;border:1px solid #6ee7b7;border-radius:15px 20px 20px 15px;
+  background:linear-gradient(145deg,#6ee7b7 0%,#10b981 35%,#065f46 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.48),0 0 20px rgba(16,185,129,.28),0 10px 20px rgba(0,0,0,.58);
+}
+.pod-rig.model-pod_xros .p-tip{width:20px;height:29px;border-radius:8px 3px 3px 8px;background:#0b1220;border:1px solid #1e293b;}
+.pod-rig.model-pod_xros .p-tank{width:45px;height:31px;border-radius:7px;background:linear-gradient(90deg,rgba(236,253,245,.18),rgba(167,243,208,.58),rgba(6,78,59,.35));border:1px solid rgba(236,253,245,.8);}
+.pod-rig.model-pod_xros .p-body-decor{width:103px;height:32px;border-radius:10px;background:linear-gradient(135deg,#34d399,#047857 70%);border:1px solid #a7f3d0;}
+.pod-rig.model-pod_xros .p-body-decor::before{content:'XROS';position:absolute;left:12px;top:9px;color:rgba(236,253,245,.8);font-size:8px;font-weight:900;letter-spacing:1px;z-index:2;}
+
+/* 3. Drag Box — массивный металлический box-mod */
+.pod-rig.model-pod_drag{
+  height:68px;padding:7px 14px 7px 9px;gap:9px;border:2px solid #fbbf24;border-radius:12px 18px 18px 12px;
+  background:linear-gradient(145deg,#d97706,#78350f 52%,#2b1308);transform:rotate(-2deg);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.32),inset 0 -10px 18px rgba(0,0,0,.38),0 0 20px rgba(245,158,11,.25),0 12px 25px rgba(0,0,0,.66);
+}
+.pod-rig.model-pod_drag .p-tip{width:19px;height:25px;border-radius:5px 2px 2px 5px;background:#1c1917;border:1px solid #78716c;}
+.pod-rig.model-pod_drag .p-tank{width:49px;height:43px;border-radius:8px;background:linear-gradient(90deg,rgba(15,23,42,.82),rgba(120,53,15,.18));border:1px solid #fde68a;}
+.pod-rig.model-pod_drag .p-body-decor{width:121px;height:49px;border-radius:10px;background:linear-gradient(145deg,#44403c,#1c1917 65%,#09090b);border:1px solid #d97706;}
+.pod-rig.model-pod_drag .p-body-decor::before{content:'DRAG';position:absolute;left:10px;bottom:8px;color:#fbbf24;font-size:9px;font-weight:900;letter-spacing:1.5px;z-index:2;}
+.pod-rig.model-pod_drag .p-screen{position:relative;z-index:3;}
+
+/* 4. Aegis — защищённый корпус с выступающими гранями */
+.pod-rig.model-pod_aegis{
+  height:74px;padding:7px 17px 7px 8px;gap:9px;border:2px solid #38bdf8;border-radius:21px 13px 16px 21px;
+  background:linear-gradient(145deg,#64748b,#1e293b 42%,#020617);clip-path:polygon(8% 0,88% 0,100% 17%,96% 88%,83% 100%,8% 95%,0 78%,3% 16%);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.28),0 0 23px rgba(56,189,248,.34),0 13px 25px rgba(0,0,0,.7);
+}
+.pod-rig.model-pod_aegis .p-tip{width:23px;height:30px;border-radius:10px 3px 3px 10px;background:#020617;border:1px solid #38bdf8;}
+.pod-rig.model-pod_aegis .p-tank{width:53px;height:47px;border-radius:10px;background:linear-gradient(90deg,rgba(2,6,23,.78),rgba(125,211,252,.3),rgba(2,6,23,.85));border:1px solid #bae6fd;}
+.pod-rig.model-pod_aegis .p-body-decor{width:130px;height:52px;border-radius:12px;background:linear-gradient(135deg,#334155,#0f172a 55%,#075985);border:1px solid #60a5fa;}
+.pod-rig.model-pod_aegis .p-body-decor::before{content:'AEGIS';position:absolute;left:12px;bottom:8px;color:#bae6fd;font-size:8px;font-weight:900;letter-spacing:1.4px;z-index:2;}
+
+/* 5. Cyber — неоновый мод с центральным световым каналом */
+.pod-rig.model-pod_cyber{
+  height:78px;padding:8px 18px 8px 9px;gap:10px;border:2px solid #f0abfc;border-radius:18px 8px 22px 11px;
+  background:linear-gradient(145deg,#86198f,#3b0764 42%,#090514);transform:skewY(-2deg);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 0 28px rgba(232,121,249,.46),0 14px 28px rgba(0,0,0,.75);
+}
+.pod-rig.model-pod_cyber .p-tip{width:27px;height:34px;border-radius:12px 4px 4px 12px;background:linear-gradient(180deg,#f5d0fe,#a21caf);border:1px solid #fdf4ff;}
+.pod-rig.model-pod_cyber .p-tank{width:57px;height:52px;border-radius:11px;background:linear-gradient(90deg,rgba(24,10,45,.92),rgba(232,121,249,.34),rgba(24,10,45,.95));border:1px solid #f0abfc;}
+.pod-rig.model-pod_cyber .p-body-decor{width:143px;height:57px;border-radius:13px;background:linear-gradient(135deg,#312e81,#090514 62%,#701a75);border:1px solid #d946ef;}
+.pod-rig.model-pod_cyber .p-body-decor::before{content:'CYBER / 150W';position:absolute;left:12px;bottom:9px;color:#f5d0fe;font-size:8px;font-weight:900;letter-spacing:1px;z-index:2;}
+.pod-rig.model-pod_cyber .p-led{width:11px;height:11px;box-shadow:0 0 13px var(--pod-color),0 0 24px var(--pod-color);}
+
+</style>
+</head>
+<body>
+
+<div class="toasts" id="toasts"></div>
+
+<div class="level-modal hidden" id="levelModal" aria-hidden="true">
+  <div class="level-sheet" role="dialog" aria-modal="true" aria-labelledby="levelModalTitle">
+    <div class="level-modal-head">
+      <div>
+        <h2 id="levelModalTitle">Путь уровней</h2>
+        <p>Звания открываются за XP и показывают, как растёт твой дымный бизнес.</p>
+      </div>
+      <button class="level-close" id="levelCloseBtn" aria-label="Закрыть">×</button>
+    </div>
+    <div class="level-summary" id="levelSummary"></div>
+    <div class="level-road" id="levelRoad"></div>
+    <div class="level-infinite">После 24 уровня развитие продолжается бесконечно — финального потолка нет.</div>
+  </div>
+</div>
+
+<div class="profile-modal hidden" id="profileModal" aria-hidden="true">
+  <div class="profile-sheet" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
+    <div class="profile-head">
+      <div>
+        <h2 id="profileTitle">Профиль игрока</h2>
+        <p>Имя и статистика сохраняются локально. После подключения Supabase профиль синхронизируется онлайн.</p>
+      </div>
+      <button class="level-close" id="profileCloseBtn" aria-label="Закрыть">×</button>
+    </div>
+    <div class="profile-form">
+      <input id="profileNameInput" maxlength="24" placeholder="Имя игрока" autocomplete="nickname">
+      <button class="profile-save" id="profileSaveBtn">Сохранить</button>
+    </div>
+    <div class="profile-status" id="profileStatus">Локальный профиль</div>
+    <div class="profile-stats" id="profileStats"></div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <header class="game-header">
+    <div class="logo-mark">◉</div>
+    <div>
+      <div class="eyebrow">SMOKE LAB · IDLE ARCADE</div>
+      <h1>Сигаретный Тайкун</h1>
+    </div>
+    <button class="profile-open" id="profileOpenBtn">Профиль</button>
+    <div class="live-dot">LIVE</div>
+  </header>
+
+  <div class="level-hud" id="levelHud">
+    <div class="level-top">
+      <div class="level-badge">
+        <span class="level-pill" id="levelPill">УР. 1</span>
+        <span id="levelTitle">Новичок дыма</span>
+      </div>
+      <div class="xp-meta"><b id="xpText">0 / 25 XP</b> · <span id="xpPct">0%</span></div>
+    </div>
+    <div class="xp-bar"><div class="xp-fill" id="xpFill"></div></div>
+    <button class="level-open" id="levelOpenBtn">Открыть путь уровней ↗</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="label" id="coinsLabel">Монеты</div>
+      <div class="value" id="coins">0</div>
+    </div>
+    <div class="stat">
+      <div class="label" id="smokedLabel">Выкурено</div>
+      <div class="value" id="smoked">0</div>
+    </div>
+    <div class="stat">
+      <div class="label">В секунду</div>
+      <div class="value" id="cps">0</div>
+    </div>
+  </div>
+
+  <div class="smoke-area" id="tapArea">
+    <div class="scene-label" id="sceneLabel">СИГАРЕТНЫЙ ЦИКЛ</div>
+    <canvas id="smokeCanvas"></canvas>
+
+    <div class="cig-wrap" id="cigWrap">
+      <div class="cig-stack" id="cigStack"></div>
+
+      <div class="pack-prop" id="packProp">
+        <div class="pk-lid"></div>
+        <div class="pk-sticks"><span></span><span></span><span></span><span></span></div>
+        <div class="pk-band" id="packBrandLabel">ПРИМА</div>
+        <div class="pk-foil"></div>
+      </div>
+
+      <div class="pod-stage" id="podStage">
+        <div class="pod-rig model-pod_mini" id="podEl" style="--pod-color:#38bdf8;">
+          <div class="p-tip" id="podTipEl"></div>
+          <div class="p-tank"><div class="p-juice" id="podJuiceBar"></div></div>
+          <div class="p-body-decor">
+            <div class="p-screen" id="podScreen">25W<br>0.8Ω</div>
+            <div class="p-led"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hookah-stage" id="hookahStage">
+        <div class="hookah-rig model-h_classic" id="hookahEl" style="--hookah-color:#c084fc;">
+          <div class="h-top-stack">
+            <div class="h-coal-zone" id="hookahCoalZone">
+              <div class="h-coal"></div>
+              <div class="h-coal"></div>
+              <div class="h-coal"></div>
+            </div>
+            <div class="h-hmd"></div>
+            <div class="h-bowl"></div>
+          </div>
+          <div class="h-tray"></div>
+          <div class="h-shaft-row">
+            <div class="h-hose-wrap">
+              <div class="h-hose-port"></div>
+              <div class="h-hose-tube"></div>
+            </div>
+            <div class="h-stem">
+              <div class="h-purge"></div>
+            </div>
+          </div>
+          <div class="h-neck"></div>
+          <div class="h-base">
+            <div class="h-water" id="hookahWaterBar"></div>
+            <div class="h-glass-shine"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="bar"><div class="fill" id="fill"></div></div>
+    <div class="hint" id="hint">Тапай по сигарете — она плавно догорает справа налево до фильтра 💨</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="shop">⚙️ Улучшения</button>
+    <button class="tab" data-tab="brands">🚬 Сигареты</button>
+    <button class="tab pod-tab locked" data-tab="pods" id="podsTab">💨 Подики 🔒</button>
+    <button class="tab hookah-tab locked" data-tab="hookahs" id="hookahsTab">🫧 Кальяны 🔒</button>
+    <button class="tab" data-tab="ach">🏆 Награды</button>
+  </div>
+
+  <div class="list" id="shopList"></div>
+  <div class="list hidden" id="brandList"></div>
+  <div class="list hidden" id="podList"></div>
+  <div class="list hidden" id="hookahList"></div>
+  <div class="list hidden" id="achList"></div>
+
+  <div class="footer">
+    <button id="resetBtn">Сбросить прогресс</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* =========================================================
+   ДАННЫЕ
+   ========================================================= */
+const BRANDS = [
+  { id:'prima',     name:'Прима',       icon:'🚬', value:1,     time:1.6,  price:0 },
+  { id:'rodopi',    name:'Родопи',      icon:'🍂', value:4,     time:2.4,  price:60 },
+  { id:'mentol',    name:'Ментол',      icon:'🌿', value:12,    time:3.0,  price:500 },
+  { id:'sobranie',  name:'Собрание',    icon:'🎩', value:25,    time:3.4,  price:1500 },
+  { id:'parlament', name:'Парламент',   icon:'✨', value:40,    time:3.8,  price:3500 },
+  { id:'dunhill',   name:'Данхилл',     icon:'🎯', value:90,    time:4.2,  price:12000 },
+  { id:'cuba',      name:'Кубинские',   icon:'🍫', value:150,   time:4.8,  price:25000 },
+  { id:'davidoff',  name:'Давидофф',    icon:'🖤', value:350,   time:5.4,  price:90000 },
+  { id:'gold',      name:'Золотые',     icon:'👑', value:600,   time:6.0,  price:180000 },
+  { id:'diamond',   name:'Бриллиант',   icon:'💎', value:2000,  time:7.0,  price:1000000 },
+  { id:'cosmic',    name:'Космические', icon:'🌌', value:7000,  time:8.5,  price:8000000 },
+  { id:'eternal',   name:'Вечные',      icon:'🌈', value:25000, time:10.0, price:60000000 }
+];
+
+const PODS = [
+  { id:'pod_mini',  name:'Pod Mini Stick',  watt:'15W · 1.2Ω', color:'#38bdf8', value:1,    time:2.2, price:0 },
+  { id:'pod_xros',  name:'Vaporesso Xros',  watt:'25W · 0.8Ω', color:'#34d399', value:5,    time:2.6, price:120 },
+  { id:'pod_drag',  name:'Voopoo Drag Box', watt:'45W · 0.4Ω', color:'#fbbf24', value:18,   time:3.0, price:900 },
+  { id:'pod_aegis', name:'GeekVape Aegis',  watt:'80W · 0.2Ω', color:'#60a5fa', value:65,   time:3.4, price:6500 },
+  { id:'pod_cyber', name:'Cyber Mech Mod',  watt:'150W · 0.1Ω',color:'#e879f9', value:240,  time:3.8, price:45000 }
+];
+
+const HOOKAHS = [
+  { id:'h_classic', name:'Классик Латунь', tag:'Глиняная чаша · 2 угля', color:'#c084fc', value:1,    time:2.5, price:0 },
+  { id:'h_alpha',   name:'Alpha Hookah X',  tag:'Продувка 360° · Кокос',   color:'#38bdf8', value:6,    time:2.9, price:150 },
+  { id:'h_union',   name:'Union Sleek',     tag:'Дерево и сталь · Фанел',  color:'#fb923c', value:24,   time:3.3, price:1200 },
+  { id:'h_steam',   name:'Steamulation Pro',tag:'Тяга турбо · Калауд+',    color:'#34d399', value:85,   time:3.7, price:8500 },
+  { id:'h_royale',  name:'Royale Gold Lava',tag:'Хрусталь · Премиум микс',color:'#f472b6', value:320,  time:4.2, price:60000 }
+];
+
+const CIG_UPGRADES = [
+  {
+    id:'speed', name:'Скорость выкуривания', icon:'💨',
+    desc: lvl => `Скорость ×${(1+0.25*lvl).toFixed(2)} → ×${(1+0.25*(lvl+1)).toFixed(2)}`,
+    cost: lvl => Math.floor(15 * Math.pow(1.75, lvl))
+  },
+  {
+    id:'tapPower', name:'Сила затяжки', icon:'👆',
+    desc: lvl => `+${(0.22+0.06*lvl).toFixed(2)} → +${(0.22+0.06*(lvl+1)).toFixed(2)} за тап`,
+    cost: lvl => Math.floor(40 * Math.pow(1.95, lvl))
+  },
+  {
+    id:'batch', name:'Пачка за раз', icon:'📦',
+    desc: lvl => `${1+lvl} → ${2+lvl} сигарет за цикл`,
+    cost: lvl => Math.floor(250 * Math.pow(3.5, lvl))
+  },
+  {
+    id:'pullSpeed', name:'Скорость доставания', icon:'⚡',
+    desc: lvl => `Доставание ×${(1+0.35*lvl).toFixed(2)} → ×${(1+0.35*(lvl+1)).toFixed(2)} (${(1.05/(1+0.35*lvl)).toFixed(2)} с → ${(1.05/(1+0.35*(lvl+1))).toFixed(2)} с)`,
+    cost: lvl => Math.floor(90 * Math.pow(1.85, lvl))
+  },
+  {
+    id:'auto', name:'Авто-курильщик', icon:'🤖',
+    desc: lvl => `${(0.4*lvl).toFixed(1)} → ${(0.4*(lvl+1)).toFixed(1)} сиг/сек`,
+    cost: lvl => Math.floor(150 * Math.pow(1.7, lvl))
+  },
+  {
+    id:'mult', name:'Множитель монет', icon:'💰',
+    desc: lvl => `×${(1+0.3*lvl).toFixed(1)} → ×${(1+0.3*(lvl+1)).toFixed(1)} к доходу`,
+    cost: lvl => Math.floor(500 * Math.pow(2.3, lvl))
+  },
+  {
+    id:'crit', name:'Критическая затяжка', icon:'💥', max:10,
+    desc: lvl => `${(6*lvl)}% → ${(6*(lvl+1))}% шанс ×5 монет`,
+    cost: lvl => Math.floor(800 * Math.pow(2.1, lvl))
+  },
+  {
+    id:'discount', name:'Оптовая скидка', icon:'🏷️', max:10,
+    desc: lvl => `−${(8*lvl)}% → −${(8*(lvl+1))}% к цене сигарет`,
+    cost: lvl => Math.floor(1200 * Math.pow(2.6, lvl))
+  }
+];
+
+const POD_UPGRADES = [
+  {
+    id:'podJuiceBuy', name:'Флакон жижи (+30 мл)', icon:'💧',
+    desc: () => `Запас в баке: ${state.podJuice.toFixed(1)} / ${podTankCap()} мл (долить +30 мл)`,
+    btnText: () => `${fmt(podJuiceCost())} 💧`,
+    canAfford: () => state.podCoins >= podJuiceCost() && state.podJuice < podTankCap(),
+    customBuy: () => {
+      const cost = podJuiceCost();
+      if(state.podCoins < cost || state.podJuice >= podTankCap()) return false;
+      state.podCoins -= cost;
+      state.podJuice = Math.min(podTankCap(), state.podJuice + 30);
+      return true;
+    }
+  },
+  {
+    id:'podCoil', name:'Испарители (сетка)', icon:'🔥',
+    desc: lvl => `Ур. ${lvl} → ${lvl+1} · Доход ×${(1+0.35*lvl).toFixed(2)} → ×${(1+0.35*(lvl+1)).toFixed(2)}`,
+    cost: lvl => Math.floor(20 * Math.pow(1.85, lvl))
+  },
+  {
+    id:'podTank', name:'Объём картриджа', icon:'🧪',
+    desc: lvl => `${30 + lvl*15} → ${45 + lvl*15} мл макс. запас жижи`,
+    cost: lvl => Math.floor(35 * Math.pow(2.0, lvl))
+  },
+  {
+    id:'podAirflow', name:'Обдув и мощность', icon:'🌪️',
+    desc: lvl => `Скорость тяги ×${(1+0.25*lvl).toFixed(2)} → ×${(1+0.25*(lvl+1)).toFixed(2)}`,
+    cost: lvl => Math.floor(25 * Math.pow(1.8, lvl))
+  },
+  {
+    id:'podTap', name:'Тугость затяжки', icon:'👆',
+    desc: lvl => `+${(0.24+0.06*lvl).toFixed(2)} → +${(0.24+0.06*(lvl+1)).toFixed(2)} за тап`,
+    cost: lvl => Math.floor(50 * Math.pow(1.95, lvl))
+  },
+  {
+    id:'podAuto', name:'Авто-парилка', icon:'🤖',
+    desc: lvl => `${(0.4*lvl).toFixed(1)} → ${(0.4*(lvl+1)).toFixed(1)} тяг/сек`,
+    cost: lvl => Math.floor(140 * Math.pow(1.75, lvl))
+  },
+  {
+    id:'podNicotine', name:'Крепость никотина', icon:'⚡', max:10,
+    desc: lvl => `${(7*lvl)}% → ${(7*(lvl+1))}% шанс крит-тяги ×5`,
+    cost: lvl => Math.floor(300 * Math.pow(2.15, lvl))
+  }
+];
+
+const HOOKAH_UPGRADES = [
+  {
+    id:'hookahCoalBuy', name:'Угли кокосовые (+25 шт)', icon:'🔥',
+    desc: () => `Запас углей: ${state.hookahCoals.toFixed(1)} / ${hookahCoalCap()} шт (досыпать +25)`,
+    btnText: () => `${fmt(hookahCoalCost())} 🫧`,
+    canAfford: () => state.hookahCoins >= hookahCoalCost() && state.hookahCoals < hookahCoalCap(),
+    customBuy: () => {
+      const cost = hookahCoalCost();
+      if(state.hookahCoins < cost || state.hookahCoals >= hookahCoalCap()) return false;
+      state.hookahCoins -= cost;
+      state.hookahCoals = Math.min(hookahCoalCap(), state.hookahCoals + 25);
+      return true;
+    }
+  },
+  {
+    id:'hookahBowl', name:'Забивка чаши (табак)', icon:'🍃',
+    desc: lvl => `Ур. ${lvl} → ${lvl+1} · Дымность ×${(1+0.35*lvl).toFixed(2)} → ×${(1+0.35*(lvl+1)).toFixed(2)}`,
+    cost: lvl => Math.floor(25 * Math.pow(1.85, lvl))
+  },
+  {
+    id:'hookahCoalCap', name:'Жарница для углей', icon:'🧺',
+    desc: lvl => `${25 + lvl*15} → ${40 + lvl*15} шт макс. запас углей`,
+    cost: lvl => Math.floor(40 * Math.pow(2.0, lvl))
+  },
+  {
+    id:'hookahDraft', name:'Лёгкость тяги', icon:'🌬️',
+    desc: lvl => `Скорость затяжки ×${(1+0.25*lvl).toFixed(2)} → ×${(1+0.25*(lvl+1)).toFixed(2)}`,
+    cost: lvl => Math.floor(30 * Math.pow(1.8, lvl))
+  },
+  {
+    id:'hookahTap', name:'Глубокий вдох', icon:'👆',
+    desc: lvl => `+${(0.25+0.06*lvl).toFixed(2)} → +${(0.25+0.06*(lvl+1)).toFixed(2)} за тап`,
+    cost: lvl => Math.floor(55 * Math.pow(1.95, lvl))
+  },
+  {
+    id:'hookahAuto', name:'Кальянщик-помощник', icon:'🧑‍🍳',
+    desc: lvl => `${(0.4*lvl).toFixed(1)} → ${(0.4*(lvl+1)).toFixed(1)} тяг/сек`,
+    cost: lvl => Math.floor(150 * Math.pow(1.75, lvl))
+  },
+  {
+    id:'hookahMix', name:'Авторский микс', icon:'✨', max:10,
+    desc: lvl => `${(7*lvl)}% → ${(7*(lvl+1))}% шанс крит-облака ×5`,
+    cost: lvl => Math.floor(320 * Math.pow(2.15, lvl))
+  }
+];
+
+const LEGACY_ACHIEVEMENTS = [
+  { id:'first',    icon:'🚬', name:'Первая затяжка',   desc:'Выкури 1 сигарету',             reward:5,     check:s=>s.smoked>=1 },
+  { id:'ten',      icon:'🔟', name:'Десятка',          desc:'Выкури 10 сигарет',             reward:20,    check:s=>s.smoked>=10 },
+  { id:'hundred',  icon:'💨', name:'Соточка',          desc:'Выкури 100 сигарет',            reward:150,   check:s=>s.smoked>=100 },
+  { id:'thousand', icon:'🔥', name:'Тысячник',         desc:'Выкури 1 000 сигарет',          reward:900,   check:s=>s.smoked>=1000 },
+  { id:'factory',  icon:'🏭', name:'Фабрика дыма',     desc:'Выкури 10 000 сигарет',         reward:6000,  check:s=>s.smoked>=10000 },
+  { id:'up1',      icon:'⚙️', name:'Прокачка',         desc:'Купи любое улучшение',          reward:25,    check:s=>s.speed+s.batch+s.pullSpeed+s.auto+s.mult+s.crit+s.discount+s.tapPower>=1 },
+  { id:'speed5',   icon:'🚀', name:'Турбо-режим',      desc:'Скорость 5 уровня',             reward:400,   check:s=>s.speed>=5 },
+  { id:'tap10',    icon:'👆', name:'Мастер затяжки',   desc:'Сила затяжки 10 уровня',        reward:2000,  check:s=>s.tapPower>=10 },
+  { id:'batch3',   icon:'📦', name:'Оптом дешевле',    desc:'Пачка 3 уровня',                reward:1200,  check:s=>s.batch>=3 },
+  { id:'pull5',    icon:'⚡', name:'Ловкие руки',      desc:'Скорость доставания 5 уровня',  reward:1500,  check:s=>s.pullSpeed>=5 },
+  { id:'auto1',    icon:'🤖', name:'Автоматизация',    desc:'Купи авто-курильщика',          reward:300,   check:s=>s.auto>=1 },
+  { id:'auto10',   icon:'🦾', name:'Дым без рук',      desc:'Авто-курильщик 10 уровня',      reward:9000,  check:s=>s.auto>=10 },
+  { id:'mult5',    icon:'💰', name:'Жирный множитель', desc:'Множитель 5 уровня',            reward:3000,  check:s=>s.mult>=5 },
+  { id:'critFirst',icon:'💥', name:'Критическая',      desc:'Выбей первый крит',             reward:200,   check:s=>s.crits>=1 },
+  { id:'critMax',  icon:'🌋', name:'Критический шторм',desc:'Крит максимального уровня',     reward:15000, check:s=>s.crit>=10 },
+  { id:'disc5',    icon:'🏷️', name:'Оптовик',          desc:'Скидка 5 уровня',               reward:5000,  check:s=>s.discount>=5 },
+  { id:'brand3',   icon:'🏷️', name:'Коллекционер',     desc:'Открой 3 вида сигарет',         reward:800,   check:s=>s.owned.length>=3 },
+  { id:'brand6',   icon:'📚', name:'Гурман',           desc:'Открой 6 видов сигарет',        reward:4000,  check:s=>s.owned.length>=6 },
+  { id:'brandAll', icon:'👑', name:'Полная коллекция', desc:'Открой все виды сигарет',       reward:50000, check:s=>s.owned.length>=BRANDS.length },
+  { id:'podUnlock',icon:'💨', name:'Эра подиков',      desc:'Открой новый уровень с подиками',reward:100000,check:s=>s.podsUnlocked },
+  { id:'podAll',   icon:'🛸', name:'Вейп-магнат',      desc:'Собери все модели подиков',     reward:250000,check:s=>s.ownedPods.length>=PODS.length },
+  { id:'hookahUnlock',icon:'🫧',name:'Кальянная эра',    desc:'Открой новый уровень с кальянами',reward:150000,check:s=>s.hookahsUnlocked },
+  { id:'hookahAll', icon:'👑',name:'Мастер кальянов',   desc:'Собери все модели кальянов',    reward:400000,check:s=>s.ownedHookahs.length>=HOOKAHS.length },
+  { id:'lvl5',     icon:'📈', name:'Опытный',         desc:'Достигни 5 уровня игрока',        reward:350,   check:s=>(s.level||1)>=5 },
+  { id:'lvl15',    icon:'🏅', name:'Мастер уровня',   desc:'Достигни 15 уровня игрока',       reward:5000,  check:s=>(s.level||1)>=15 },
+  { id:'rich',     icon:'🤑', name:'Богач',            desc:'Накопи 10 000 монет',           reward:500,   check:s=>s.coins>=10000 },
+  { id:'million',  icon:'💎', name:'Миллионер',        desc:'Заработай 1 000 000 монет',     reward:30000, check:s=>s.totalEarned>=1000000 }
+];
+
+// Достижения отсортированы от быстрых целей к долгосрочным.
+const ACHIEVEMENTS = [
+  { id:'first',       icon:'🚬', name:'Первая затяжка',     desc:'Выкури 1 сигарету',                    reward:5,      check:s=>s.smoked>=1 },
+  { id:'up1',         icon:'⚙️', name:'Прокачка',            desc:'Купи любое улучшение',                 reward:25,     check:s=>s.speed+s.batch+s.pullSpeed+s.auto+s.mult+s.crit+s.discount+s.tapPower+s.podCoil+s.podTank+s.podAirflow+s.podTap+s.podAuto+s.podNicotine+s.hookahBowl+s.hookahCoalCap+s.hookahDraft+s.hookahTap+s.hookahAuto+s.hookahMix>=1 },
+  { id:'ten',         icon:'🔟', name:'Десятка',             desc:'Выкури 10 сигарет',                    reward:20,     check:s=>s.smoked>=10 },
+  { id:'xp100',       icon:'✨', name:'Первый опыт',         desc:'Набери 100 общего XP',                 reward:40,     check:s=>s.totalXp>=100 },
+  { id:'lvl5',        icon:'📈', name:'Опытный',             desc:'Достигни 5 уровня игрока',             reward:350,    check:s=>(s.level||1)>=5 },
+  { id:'hundred',     icon:'💨', name:'Соточка',             desc:'Выкури 100 сигарет',                   reward:150,    check:s=>s.smoked>=100 },
+  { id:'coins1000',   icon:'🪙', name:'Первая тысяча',       desc:'Накопи 1 000 монет',                   reward:100,    check:s=>s.coins>=1000 },
+  { id:'critFirst',   icon:'💥', name:'Критическая',         desc:'Выбей первый крит',                    reward:200,    check:s=>s.crits>=1 },
+  { id:'smoked500',   icon:'🔥', name:'Постоянный клиент',   desc:'Выкури 500 сигарет',                   reward:500,    check:s=>s.smoked>=500 },
+  { id:'rich',        icon:'🤑', name:'Богач',               desc:'Накопи 10 000 монет',                  reward:500,    check:s=>s.coins>=10000 },
+  { id:'brand3',      icon:'🏷️', name:'Коллекционер',        desc:'Открой 3 вида сигарет',                reward:800,    check:s=>s.owned.length>=3 },
+  { id:'speed5',      icon:'🚀', name:'Турбо-режим',         desc:'Скорость выкуривания 5 уровня',       reward:400,    check:s=>s.speed>=5 },
+  { id:'auto1',       icon:'🤖', name:'Автоматизация',       desc:'Купи авто-курильщика',                 reward:300,    check:s=>s.auto>=1 },
+  { id:'batch3',      icon:'📦', name:'Оптом дешевле',       desc:'Пачка за раз 3 уровня',                reward:1200,   check:s=>s.batch>=3 },
+  { id:'pull5',       icon:'⚡', name:'Ловкие руки',         desc:'Скорость доставания 5 уровня',         reward:1500,   check:s=>s.pullSpeed>=5 },
+  { id:'brand6',      icon:'📚', name:'Гурман',               desc:'Открой 6 видов сигарет',               reward:4000,   check:s=>s.owned.length>=6 },
+  { id:'lvl15',       icon:'🏅', name:'Мастер уровня',       desc:'Достигни 15 уровня игрока',            reward:5000,   check:s=>(s.level||1)>=15 },
+  { id:'auto10',      icon:'🦾', name:'Дым без рук',          desc:'Авто-курильщик 10 уровня',              reward:9000,   check:s=>s.auto>=10 },
+  { id:'mult5',       icon:'💰', name:'Жирный множитель',    desc:'Множитель монет 5 уровня',              reward:3000,   check:s=>s.mult>=5 },
+  { id:'disc5',       icon:'🏷️', name:'Оптовик',              desc:'Оптовая скидка 5 уровня',               reward:5000,   check:s=>s.discount>=5 },
+  { id:'thousand',    icon:'🔥', name:'Тысячник',            desc:'Выкури 1 000 сигарет',                  reward:900,    check:s=>s.smoked>=1000 },
+  { id:'earned100k',  icon:'💎', name:'Большой оборот',      desc:'Заработай 100 000 монет за всё время', reward:5000,   check:s=>s.totalEarned>=100000 },
+  { id:'tap10',       icon:'👆', name:'Мастер затяжки',      desc:'Сила затяжки 10 уровня',                reward:2000,   check:s=>s.tapPower>=10 },
+  { id:'brandAll',    icon:'👑', name:'Полная коллекция',    desc:'Открой все виды сигарет',                reward:50000,  check:s=>s.owned.length>=BRANDS.length },
+  { id:'factory',     icon:'🏭', name:'Фабрика дыма',        desc:'Выкури 10 000 сигарет',                 reward:6000,   check:s=>s.smoked>=10000 },
+  { id:'million',     icon:'💎', name:'Миллионер',           desc:'Заработай 1 000 000 монет',              reward:30000,  check:s=>s.totalEarned>=1000000 },
+  { id:'podUnlock',   icon:'💨', name:'Эра подиков',         desc:'Открой новый уровень с подиками',       reward:100000, check:s=>s.podsUnlocked },
+  { id:'podPuffs100', icon:'🌊', name:'Морской пар',         desc:'Сделай 100 затяжек на подике',          reward:5000,   check:s=>s.podPuffs>=100 },
+  { id:'podAll',      icon:'🛸', name:'Вейп-магнат',         desc:'Собери все модели подиков',             reward:250000, check:s=>s.ownedPods.length>=PODS.length },
+  { id:'hookahUnlock',icon:'🫧', name:'Кальянная эра',       desc:'Открой новый уровень с кальянами',      reward:150000, check:s=>s.hookahsUnlocked },
+  { id:'hookahPuffs', icon:'🌫️', name:'Густое облако',       desc:'Сделай 100 тяг на кальяне',             reward:8000,   check:s=>s.hookahPuffs>=100 },
+  { id:'hookahAll',   icon:'👑', name:'Мастер кальянов',     desc:'Собери все модели кальянов',            reward:400000, check:s=>s.ownedHookahs.length>=HOOKAHS.length },
+  { id:'critMax',     icon:'🌋', name:'Критический шторм',   desc:'Критическая затяжка максимального уровня', reward:15000, check:s=>s.crit>=10 },
+  { id:'xp5000',      icon:'🌟', name:'Опыт дымного мастера',desc:'Набери 5 000 общего XP',                reward:20000,  check:s=>s.totalXp>=5000 },
+  { id:'earned10m',   icon:'🏦', name:'Империя дыма',        desc:'Заработай 10 000 000 монет за всё время', reward:100000, check:s=>s.totalEarned>=10000000 }
+];
+
+/* =========================================================
+   СОСТОЯНИЕ
+   ========================================================= */
+const SAVE_KEY = 'smoke_tycoon_v5';
+const PROFILE_KEY = 'smoke_tycoon_profile_v1';
+// Заполни эти два поля данными проекта Supabase. Service role key сюда добавлять нельзя.
+const SUPABASE_CONFIG = { url:'https://geivxyyijkyqbdnkopku.supabase.co', anonKey:'sb_publishable_ooL3BIcoSLzhhIVZ-W7_ng__0K0aRGC' };
+let supabaseClient = null;
+let remoteSyncTimer = null;
+let remoteSyncBusy = false;
+
+const DEFAULT_STATE = {
+  coins: 0,
+  smoked: 0,
+  totalEarned: 0,
+  crits: 0,
+  brand: 'prima',
+  owned: ['prima'],
+  speed: 0,
+  tapPower: 0,
+  batch: 0,
+  pullSpeed: 0,
+  auto: 0,
+  mult: 0,
+  crit: 0,
+  discount: 0,
+
+  podsUnlocked: false,
+  mode: 'cigs',
+  podCoins: 0,
+  podPuffs: 0,
+  pod: 'pod_mini',
+  ownedPods: ['pod_mini'],
+  podJuice: 30,
+  podCoil: 0,
+  podTank: 0,
+  podAirflow: 0,
+  podTap: 0,
+  podAuto: 0,
+  podNicotine: 0,
+
+  hookahsUnlocked: false,
+  hookahCoins: 0,
+  hookahPuffs: 0,
+  hookah: 'h_classic',
+  ownedHookahs: ['h_classic'],
+  hookahCoals: 25,
+  hookahBowl: 0,
+  hookahCoalCap: 0,
+  hookahDraft: 0,
+  hookahTap: 0,
+  hookahAuto: 0,
+  hookahMix: 0,
+
+  level: 1,
+  xp: 0,
+  totalXp: 0,
+
+  profileName: 'Игрок',
+
+  ach: []
+};
+
+let state = load();
+
+function profileSnapshot(){
+  return {
+    nickname: String(state.profileName || 'Игрок').trim().slice(0,24) || 'Игрок',
+    level: Math.max(1, Math.floor(state.level || 1)),
+    xp: Math.floor(state.xp || 0),
+    total_xp: Math.floor(state.totalXp || 0),
+    coins: Math.floor(state.coins || 0),
+    total_earned: Math.floor(state.totalEarned || 0),
+    smoked: Math.floor(state.smoked || 0),
+    crits: Math.floor(state.crits || 0),
+    achievements: state.ach.length,
+    pod_puffs: Math.floor(state.podPuffs || 0),
+    hookah_puffs: Math.floor(state.hookahPuffs || 0),
+    mode: state.mode || 'cigs'
+  };
+}
+
+function renderProfile(){
+  const snap = profileSnapshot();
+  profileNameInput.value = snap.nickname;
+  profileStatsEl.innerHTML = '';
+  [
+    ['Уровень', snap.level],
+    ['Общий XP', fmt(snap.total_xp)],
+    ['Сигареты', fmt(snap.smoked)],
+    ['Монеты заработаны', fmt(snap.total_earned)],
+    ['Критические затяжки', fmt(snap.crits)],
+    ['Достижения', `${snap.achievements} / ${ACHIEVEMENTS.length}`],
+    ['Затяжки подика', fmt(snap.pod_puffs)],
+    ['Тяги кальяна', fmt(snap.hookah_puffs)]
+  ].forEach(([label,value]) => {
+    const el = document.createElement('div');
+    el.className = 'profile-stat';
+    const b = document.createElement('b');
+    b.textContent = value;
+    const s = document.createElement('span');
+    s.textContent = label;
+    el.appendChild(b); el.appendChild(s); profileStatsEl.appendChild(el);
+  });
+}
+
+async function syncRemoteProfile(){
+  if(!supabaseClient || remoteSyncBusy) return;
+  remoteSyncBusy = true;
+  try{
+    const { data:{ user } } = await supabaseClient.auth.getUser();
+    if(!user) return;
+    const snap = profileSnapshot();
+    const { error: profileError } = await supabaseClient.from('profiles').upsert({
+      id:user.id, nickname:snap.nickname, updated_at:new Date().toISOString()
+    }, { onConflict:'id' });
+    if(profileError) throw profileError;
+    const { error: statsError } = await supabaseClient.from('player_stats').upsert({
+      player_id:user.id, level:snap.level, xp:snap.xp, total_xp:snap.total_xp,
+      coins:snap.coins, total_earned:snap.total_earned, smoked:snap.smoked,
+      crits:snap.crits, achievements:snap.achievements, pod_puffs:snap.pod_puffs,
+      hookah_puffs:snap.hookah_puffs, mode:snap.mode, updated_at:new Date().toISOString()
+    }, { onConflict:'player_id' });
+    if(statsError) throw statsError;
+    if(profileStatusEl) profileStatusEl.textContent = 'Синхронизировано с Supabase';
+  }catch(error){
+    if(profileStatusEl) profileStatusEl.textContent = 'Онлайн-синхронизация недоступна · локально сохранено';
+    console.warn('Supabase sync failed:', error);
+  }finally{
+    remoteSyncBusy = false;
+  }
+}
+
+async function initSupabase(){
+  if(!SUPABASE_CONFIG.url || !SUPABASE_CONFIG.anonKey || !window.supabase) return;
+  try{
+    supabaseClient = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+    let { data:{ session } } = await supabaseClient.auth.getSession();
+    if(!session){
+      const result = await supabaseClient.auth.signInAnonymously();
+      if(result.error) throw result.error;
+      session = result.data.session;
+    }
+    if(session){
+      const { data: profile } = await supabaseClient.from('profiles').select('nickname').eq('id', session.user.id).maybeSingle();
+      if(profile?.nickname && (!state.profileName || state.profileName === 'Игрок')){
+        state.profileName = profile.nickname;
+        save();
+      }
+      if(profileStatusEl) profileStatusEl.textContent = 'Онлайн-профиль подключён';
+      await syncRemoteProfile();
+    }
+  }catch(error){
+    supabaseClient = null;
+    if(profileStatusEl) profileStatusEl.textContent = 'Supabase не подключён · локально сохранено';
+    console.warn('Supabase init failed:', error);
+  }
+}
+
+function load(){
+  try{
+    const raw = localStorage.getItem(SAVE_KEY);
+    if(!raw) return JSON.parse(JSON.stringify(DEFAULT_STATE));
+    const s = JSON.parse(raw);
+    const merged = Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), s);
+    if(!Array.isArray(merged.ach)) merged.ach = [];
+    if(!Array.isArray(merged.owned) || !merged.owned.length) merged.owned = ['prima'];
+    if(!Array.isArray(merged.ownedPods) || !merged.ownedPods.length) merged.ownedPods = ['pod_mini'];
+    if(!Array.isArray(merged.ownedHookahs) || !merged.ownedHookahs.length) merged.ownedHookahs = ['h_classic'];
+    const numericKeys = [
+      'coins','smoked','totalEarned','crits','speed','tapPower','batch','pullSpeed','auto','mult','crit','discount',
+      'podCoins','podPuffs','podJuice','podCoil','podTank','podAirflow','podTap','podAuto','podNicotine',
+      'hookahCoins','hookahPuffs','hookahCoals','hookahBowl','hookahCoalCap','hookahDraft','hookahTap','hookahAuto','hookahMix'
+    ];
+    numericKeys.forEach(key => {
+      const value = Number(merged[key]);
+      merged[key] = Number.isFinite(value) ? Math.max(0, value) : Number(DEFAULT_STATE[key] || 0);
+    });
+    merged.owned = [...new Set(merged.owned.filter(id => BRANDS.some(x => x.id === id)))];
+    merged.ownedPods = [...new Set(merged.ownedPods.filter(id => PODS.some(x => x.id === id)))];
+    merged.ownedHookahs = [...new Set(merged.ownedHookahs.filter(id => HOOKAHS.some(x => x.id === id)))];
+    if(!merged.owned.length) merged.owned = ['prima'];
+    if(!merged.ownedPods.length) merged.ownedPods = ['pod_mini'];
+    if(!merged.ownedHookahs.length) merged.ownedHookahs = ['h_classic'];
+    merged.podsUnlocked = Boolean(merged.podsUnlocked) || merged.owned.length >= BRANDS.length;
+    merged.hookahsUnlocked = Boolean(merged.hookahsUnlocked) || merged.ownedPods.length >= PODS.length;
+    merged.podJuice = Math.min(merged.podJuice, 30 + merged.podTank * 15);
+    merged.hookahCoals = Math.min(merged.hookahCoals, 25 + merged.hookahCoalCap * 15);
+    if(!['cigs','pods','hookahs'].includes(merged.mode)) merged.mode = 'cigs';
+    if(!BRANDS.some(x => x.id === merged.brand) || !merged.owned.includes(merged.brand)) merged.brand = 'prima';
+    if(!PODS.some(x => x.id === merged.pod) || !merged.ownedPods.includes(merged.pod)) merged.pod = 'pod_mini';
+    if(!HOOKAHS.some(x => x.id === merged.hookah) || !merged.ownedHookahs.includes(merged.hookah)) merged.hookah = 'h_classic';
+    if(!merged.podsUnlocked) merged.mode = 'cigs';
+    if(!merged.hookahsUnlocked && merged.mode === 'hookahs') merged.mode = merged.podsUnlocked ? 'pods' : 'cigs';
+    merged.level = Math.max(1, Number(merged.level) || 1);
+    merged.xp = Math.max(0, Number(merged.xp) || 0);
+    merged.totalXp = Math.max(0, Number(merged.totalXp) || 0);
+    return merged;
+  }catch(e){
+    return JSON.parse(JSON.stringify(DEFAULT_STATE));
+  }
+}
+
+/* =========================================================
+   СИСТЕМА УРОВНЕЙ И ОПЫТА
+   ========================================================= */
+const LEVEL_TITLES = [
+  'Новичок дыма',
+  'Любитель затяжек',
+  'Знаток табака',
+  'Мастер дымных колец',
+  'Профи пара и тяги',
+  'Повелитель кальянной',
+  'Дымный магнат',
+  'Легенда клубов'
+];
+
+const LEVEL_TIERS = [
+  { icon:'🌱', name:'Новичок дыма', desc:'Первые шаги и базовые затяжки.' },
+  { icon:'💨', name:'Любитель затяжек', desc:'Уверенно разгоняешь свой первый цикл.' },
+  { icon:'🍂', name:'Знаток табака', desc:'Понимаешь ценность хорошего темпа.' },
+  { icon:'⭕', name:'Мастер дымных колец', desc:'Твой дым уже видно издалека.' },
+  { icon:'⚡', name:'Профи пара и тяги', desc:'Переходишь на серьёзную мощность.' },
+  { icon:'🫧', name:'Повелитель кальянной', desc:'Контролируешь угли, чашу и атмосферу.' },
+  { icon:'🏭', name:'Дымный магнат', desc:'Превращаешь каждую затяжку в бизнес.' },
+  { icon:'👑', name:'Легенда клубов', desc:'Высшая ступень титулов и бесконечный рост.' }
+];
+
+function xpNeededForLevel(lvl){
+  return Math.floor(25 * Math.pow(1.28, Math.max(0, lvl - 1)));
+}
+
+function getLevelTitle(lvl){
+  const idx = Math.min(LEVEL_TITLES.length - 1, Math.floor((Math.max(1, lvl) - 1) / 3));
+  return LEVEL_TITLES[idx];
+}
+
+function renderLevelMenu(){
+  const lvl = Math.max(1, state.level || 1);
+  const tierSize = 3;
+  levelSummaryEl.textContent = `Текущий уровень: ${lvl} · ${getLevelTitle(lvl)} · Всего титулов: ${LEVEL_TIERS.length}`;
+  levelRoadEl.innerHTML = '';
+
+  LEVEL_TIERS.forEach((tier, index) => {
+    const min = index * tierSize + 1;
+    const max = min + tierSize - 1;
+    const beyond = index === LEVEL_TIERS.length - 1 && lvl > max;
+    const current = (lvl >= min && lvl <= max) || beyond;
+    const done = lvl > max && !beyond;
+    const row = document.createElement('div');
+    row.className = 'level-tier' + (current ? ' current' : '') + (done ? ' done' : '');
+    const stateText = beyond ? '∞' : (current ? 'Сейчас' : (done ? 'Открыт' : 'Закрыт'));
+    row.innerHTML =
+      `<div class="level-tier-icon">${tier.icon}</div>` +
+      `<div><div class="level-tier-name">${tier.name}</div>` +
+      `<div class="level-tier-desc">Уровни ${min}–${max} · ${tier.desc}</div></div>` +
+      `<div class="level-tier-state">${stateText}</div>`;
+    levelRoadEl.appendChild(row);
+  });
+}
+
+function awardXp(amount){
+  if(!amount || amount <= 0) return;
+  state.xp += amount;
+  state.totalXp += amount;
+
+  let leveledUp = false;
+  let req = xpNeededForLevel(state.level);
+  let guard = 0;
+  while(state.xp >= req && guard < 25){
+    state.xp -= req;
+    state.level += 1;
+    leveledUp = true;
+    // Небольшой бонус монет за ап уровня в активной валюте
+    const lvlBonus = Math.max(5, Math.floor(state.level * 4));
+    if(isHookahMode()){
+      state.hookahCoins += lvlBonus;
+    } else if(isPodMode()){
+      state.podCoins += lvlBonus;
+    } else {
+      state.coins += lvlBonus;
+      state.totalEarned += lvlBonus;
+    }
+    req = xpNeededForLevel(state.level);
+    guard++;
+  }
+
+  if(leveledUp){
+    buzz(30);
+    showToast({
+      icon: '⬆️',
+      name: `Новый уровень: ${state.level}!`,
+      desc: `${getLevelTitle(state.level)} · Бонус +${fmt(Math.max(5, Math.floor(state.level * 4)))}`,
+      reward: 0
+    });
+    save();
+  }
+}
+
+function updateLevelUI(){
+  const lvl = Math.max(1, state.level || 1);
+  const req = xpNeededForLevel(lvl);
+  const cur = Math.min(req, Math.max(0, state.xp || 0));
+  const pct = Math.max(0, Math.min(100, (cur / req) * 100));
+
+  levelPillEl.textContent = `УР. ${lvl}`;
+  levelTitleEl.textContent = getLevelTitle(lvl);
+  xpTextEl.textContent = `${fmt(cur)} / ${fmt(req)} XP`;
+  xpPctEl.textContent = `${Math.floor(pct)}%`;
+  xpFillEl.style.width = `${pct.toFixed(1)}%`;
+}
+
+function save(){
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(state)); }catch(e){}
+  if(supabaseClient){
+    clearTimeout(remoteSyncTimer);
+    remoteSyncTimer = setTimeout(syncRemoteProfile, 1400);
+  }
+}
+
+/* =========================================================
+   ПРОИЗВОДНЫЕ ЗНАЧЕНИЯ
+   ========================================================= */
+const CRIT_MUL = 5;
+
+const isPodMode     = () => state.podsUnlocked && state.mode === 'pods';
+const isHookahMode  = () => state.hookahsUnlocked && state.mode === 'hookahs';
+const getBrand      = () => BRANDS.find(b => b.id === state.brand) || BRANDS[0];
+const getPod        = () => PODS.find(p => p.id === state.pod) || PODS[0];
+const getHookah     = () => HOOKAHS.find(h => h.id === state.hookah) || HOOKAHS[0];
+
+const cigSpeedMul   = () => 1 + 0.25 * state.speed;
+const cigBatchSize  = () => 1 + state.batch;
+const cigPullMul    = () => 1 + 0.35 * state.pullSpeed;
+const cigPullTime   = () => 1.05 / cigPullMul();
+const cigMultMul    = () => 1 + 0.3 * state.mult;
+const cigCritChance = () => Math.min(0.6, 0.06 * state.crit);
+const cigTapProg    = () => 0.22 + 0.06 * state.tapPower;
+const cigCycleTime  = () => getBrand().time / cigSpeedMul();
+const cigBaseCycle  = () => getBrand().value * cigBatchSize() * cigMultMul();
+const cigAutoRate   = () => 0.4 * state.auto;
+const cigAutoInc    = () => cigAutoRate() * getBrand().value * cigMultMul();
+const cigCps        = () => (cigBaseCycle() * (1 + cigCritChance() * (CRIT_MUL - 1))) / cigCycleTime() + cigAutoInc();
+
+const podTankCap    = () => 30 + state.podTank * 15;
+const podJuiceCost  = () => Math.max(8, Math.floor(getPod().value * 6));
+const podJuiceMult  = () => state.podJuice > 0 ? 1 : 0.2;
+const podCoilMul    = () => 1 + 0.35 * state.podCoil;
+const podSpeedMul   = () => 1 + 0.25 * state.podAirflow;
+const podCritChance = () => Math.min(0.7, 0.07 * state.podNicotine);
+const podTapProg    = () => 0.24 + 0.06 * state.podTap;
+const podCycleTime  = () => getPod().time / podSpeedMul();
+const podBaseCycle  = () => getPod().value * podCoilMul() * podJuiceMult();
+const podAutoRate   = () => 0.4 * state.podAuto;
+const podAutoInc    = () => podAutoRate() * getPod().value * podCoilMul() * podJuiceMult();
+const podCps        = () => (podBaseCycle() * (1 + podCritChance() * (CRIT_MUL - 1))) / podCycleTime() + podAutoInc();
+
+const hookahCoalCap   = () => 25 + state.hookahCoalCap * 15;
+const hookahCoalCost  = () => Math.max(10, Math.floor(getHookah().value * 6));
+const hookahCoalMult  = () => state.hookahCoals > 0 ? 1 : 0.2;
+const hookahBowlMul   = () => 1 + 0.35 * state.hookahBowl;
+const hookahSpeedMul  = () => 1 + 0.25 * state.hookahDraft;
+const hookahCritChance= () => Math.min(0.7, 0.07 * state.hookahMix);
+const hookahTapProg   = () => 0.25 + 0.06 * state.hookahTap;
+const hookahCycleTime = () => getHookah().time / hookahSpeedMul();
+const hookahBaseCycle = () => getHookah().value * hookahBowlMul() * hookahCoalMult();
+const hookahAutoRate  = () => 0.4 * state.hookahAuto;
+const hookahAutoInc   = () => hookahAutoRate() * getHookah().value * hookahBowlMul() * hookahCoalMult();
+const hookahCps       = () => (hookahBaseCycle() * (1 + hookahCritChance() * (CRIT_MUL - 1))) / hookahCycleTime() + hookahAutoInc();
+
+const brandPrice    = b => Math.max(0, Math.floor(b.price * (1 - 0.08 * state.discount)));
+const podPrice      = p => p.price;
+
+/* =========================================================
+   ФОРМАТ ЧИСЕЛ
+   ========================================================= */
+function fmt(n){
+  n = Math.max(0, n);
+  if(n < 1000) return Math.floor(n).toString();
+  if(n < 1e6)  return (n/1e3).toFixed(1).replace(/\.0$/,'') + 'K';
+  if(n < 1e9)  return (n/1e6).toFixed(1).replace(/\.0$/,'') + 'M';
+  if(n < 1e12) return (n/1e9).toFixed(1).replace(/\.0$/,'') + 'B';
+  return (n/1e12).toFixed(1).replace(/\.0$/,'') + 'T';
+}
+function fmtDec(n){
+  if(n < 10) return (Math.round(n*10)/10).toString();
+  return fmt(n);
+}
+
+/* =========================================================
+   ЭЛЕМЕНТЫ
+   ========================================================= */
+const coinsLabelEl   = document.getElementById('coinsLabel');
+const smokedLabelEl  = document.getElementById('smokedLabel');
+const coinsEl        = document.getElementById('coins');
+const smokedEl       = document.getElementById('smoked');
+const cpsEl          = document.getElementById('cps');
+const fillEl         = document.getElementById('fill');
+const hintEl         = document.getElementById('hint');
+const sceneLabelEl   = document.getElementById('sceneLabel');
+const tapArea        = document.getElementById('tapArea');
+const cigStack       = document.getElementById('cigStack');
+const packProp       = document.getElementById('packProp');
+const packBrandLabel = document.getElementById('packBrandLabel');
+const podEl          = document.getElementById('podEl');
+const podTipEl       = document.getElementById('podTipEl');
+const podScreenEl    = document.getElementById('podScreen');
+const podJuiceBar    = document.getElementById('podJuiceBar');
+const cigWrap        = document.getElementById('cigWrap');
+const shopList       = document.getElementById('shopList');
+const brandList      = document.getElementById('brandList');
+const podList        = document.getElementById('podList');
+const achList        = document.getElementById('achList');
+const hookahEl       = document.getElementById('hookahEl');
+const hookahCoalZone = document.getElementById('hookahCoalZone');
+const hookahWaterBar = document.getElementById('hookahWaterBar');
+const hookahList     = document.getElementById('hookahList');
+const podsTab        = document.getElementById('podsTab');
+const hookahsTab     = document.getElementById('hookahsTab');
+const levelPillEl    = document.getElementById('levelPill');
+const levelTitleEl   = document.getElementById('levelTitle');
+const xpTextEl       = document.getElementById('xpText');
+const xpPctEl        = document.getElementById('xpPct');
+const xpFillEl       = document.getElementById('xpFill');
+const levelOpenBtn    = document.getElementById('levelOpenBtn');
+const levelModal      = document.getElementById('levelModal');
+const levelCloseBtn   = document.getElementById('levelCloseBtn');
+const levelSummaryEl  = document.getElementById('levelSummary');
+const levelRoadEl     = document.getElementById('levelRoad');
+const profileOpenBtn  = document.getElementById('profileOpenBtn');
+const profileModal    = document.getElementById('profileModal');
+const profileCloseBtn = document.getElementById('profileCloseBtn');
+const profileSaveBtn  = document.getElementById('profileSaveBtn');
+const profileNameInput= document.getElementById('profileNameInput');
+const profileStatusEl = document.getElementById('profileStatus');
+const profileStatsEl  = document.getElementById('profileStats');
+const toastsEl       = document.getElementById('toasts');
+const smokeCanvas    = document.getElementById('smokeCanvas');
+const sctx           = smokeCanvas.getContext('2d');
+
+const cigBuyBtns   = {};
+const cigDescEls   = {};
+const podBuyBtns   = {};
+const podDescEls   = {};
+const brandBtns    = {};
+const brandCards   = {};
+const podBtns      = {};
+const podCards     = {};
+const hookahBuyBtns = {};
+const hookahDescEls = {};
+const hookahBtns    = {};
+const hookahCards   = {};
+const achCards     = {};
+const achStatus    = {};
+
+/* =========================================================
+   СИСТЕМА ПЛАВНОГО ДЫМА, ЯЗЫКОВ ПЛАМЕНИ, ИСКР И ПАРА
+   ========================================================= */
+const particles = [];
+const flames    = [];
+const sparks    = [];
+const smokeRings= [];
+let canvasW     = 360;
+let canvasH     = 190;
+let dpr         = Math.min(2, window.devicePixelRatio || 1);
+let smokeTimer  = 0;
+let flameTimer  = 0;
+let puffBoost   = 0;
+let critBoost   = 0;
+let windPhase   = 0;
+
+// Мягкая текстура клуба дыма / пара
+const puffSprite = document.createElement('canvas');
+puffSprite.width = 128;
+puffSprite.height = 128;
+(function initPuffSprite(){
+  const c = puffSprite.getContext('2d');
+  const g = c.createRadialGradient(64, 64, 4, 64, 64, 62);
+  g.addColorStop(0.0,  'rgba(245,248,255,0.52)');
+  g.addColorStop(0.32, 'rgba(225,230,242,0.28)');
+  g.addColorStop(0.68, 'rgba(195,202,220,0.09)');
+  g.addColorStop(1.0,  'rgba(180,188,208,0)');
+  c.fillStyle = g;
+  c.fillRect(0, 0, 128, 128);
+})();
+
+// Мягкая текстура язычка пламени (вытянутая капля)
+const flameSprite = document.createElement('canvas');
+flameSprite.width = 64;
+flameSprite.height = 96;
+(function initFlameSprite(){
+  const c = flameSprite.getContext('2d');
+  const g = c.createLinearGradient(32, 88, 32, 10);
+  g.addColorStop(0.0,  'rgba(255,247,198,0.98)');
+  g.addColorStop(0.28, 'rgba(255,170,38,0.92)');
+  g.addColorStop(0.72, 'rgba(239,65,12,0.62)');
+  g.addColorStop(1.0,  'rgba(239,45,8,0)');
+  c.save();
+  c.translate(32, 4);
+  c.beginPath();
+  c.moveTo(0, 83);
+  c.bezierCurveTo(-13, 78, -14, 67, -7, 55);
+  c.bezierCurveTo(-3, 48, -4, 36, 5, 16);
+  c.bezierCurveTo(7, 34, 18, 43, 13, 57);
+  c.bezierCurveTo(20, 69, 11, 79, 0, 83);
+  c.closePath();
+  c.fillStyle = g;
+  c.shadowColor = 'rgba(255,91,13,.5)';
+  c.shadowBlur = 8;
+  c.fill();
+  c.restore();
+})();
+
+function resizeSmokeCanvas(){
+  const rect = tapArea.getBoundingClientRect();
+  canvasW = Math.max(200, rect.width);
+  canvasH = Math.max(120, rect.height);
+  dpr = Math.min(2, window.devicePixelRatio || 1);
+  smokeCanvas.width  = Math.round(canvasW * dpr);
+  smokeCanvas.height = Math.round(canvasH * dpr);
+  sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function getEmitterPositions(){
+  const areaRect = tapArea.getBoundingClientRect();
+  if(isHookahMode()){
+    const coalRect = hookahCoalZone.getBoundingClientRect();
+    return [{
+      x: (coalRect.left - areaRect.left) + coalRect.width * 0.5,
+      y: (coalRect.top  - areaRect.top)  + coalRect.height * 0.35
+    }];
+  }
+  if(isPodMode()){
+    const tipRect = podTipEl.getBoundingClientRect();
+    return [{
+      x: (tipRect.left - areaRect.left) + tipRect.width * 0.25,
+      y: (tipRect.top  - areaRect.top)  + tipRect.height * 0.45
+    }];
+  }
+  const embers = cigStack.querySelectorAll('.cig:not(.no-ember) .ember');
+  if(!embers.length){
+    const wrapRect = cigWrap.getBoundingClientRect();
+    return [{
+      x: (wrapRect.right - areaRect.left) - 24,
+      y: (wrapRect.top   - areaRect.top)  + wrapRect.height * 0.5
+    }];
+  }
+  const pts = [];
+  embers.forEach(emb => {
+    const r = emb.getBoundingClientRect();
+    pts.push({
+      x: (r.left - areaRect.left) + r.width * 0.48,
+      y: (r.top  - areaRect.top)  + r.height * 0.42
+    });
+  });
+  return pts;
+}
+
+function getEmitterPos(){
+  const pts = getEmitterPositions();
+  return pts[0] || { x: canvasW * 0.65, y: canvasH * 0.45 };
+}
+
+function spawnSmokePuff(x, y, isPod, heavy){
+  if(particles.length > 140) particles.shift();
+
+  const color = isHookahMode() ? getHookah().color : (isPod ? getPod().color : null);
+  const vx = isPod
+    ? (heavy ? -55 - Math.random() * 55 : -20 - Math.random() * 20)
+    : ((Math.random() - 0.5) * 14);
+  const vy = isPod
+    ? (heavy ? -26 - Math.random() * 24 : -14 - Math.random() * 12)
+    : (heavy ? -44 - Math.random() * 26 : -28 - Math.random() * 14);
+
+  particles.push({
+    x: x + (Math.random() - 0.5) * (isPod ? 6 : 3),
+    y: y + (Math.random() - 0.5) * (isPod ? 8 : 5),
+    vx,
+    vy,
+    size: isPod
+      ? (heavy ? 18 + Math.random() * 14 : 11 + Math.random() * 7)
+      : (heavy ? 10 + Math.random() * 7  : 5.5 + Math.random() * 3.5),
+    grow: isPod ? (24 + Math.random() * 16) : (13 + Math.random() * 9),
+    alpha: isPod ? (heavy ? 0.52 : 0.24) : (heavy ? 0.42 : 0.20),
+    life: 0,
+    maxLife: isPod ? (1.4 + Math.random() * 0.8) : (2.1 + Math.random() * 1.1),
+    rot: Math.random() * Math.PI * 2,
+    vrot: (Math.random() - 0.5) * 0.9,
+    waveSeed: Math.random() * Math.PI * 2,
+    waveFreq: 1.8 + Math.random() * 1.4,
+    tint: color
+  });
+}
+
+function spawnFlameTongue(x, y, intense){
+  if(flames.length > 36) flames.shift();
+  const spread = intense ? 7 : 3;
+  flames.push({
+    x: x + (Math.random() - 0.5) * spread,
+    y: y + (Math.random() - 0.5) * 6,
+    vx: (Math.random() - 0.5) * (intense ? 9 : 5),
+    vy: intense ? (-46 - Math.random() * 30) : (-24 - Math.random() * 16),
+    w: intense ? (7 + Math.random() * 4) : (4.5 + Math.random() * 2.5),
+    h: intense ? (13 + Math.random() * 8) : (8 + Math.random() * 5),
+    life: 0,
+    maxLife: intense ? (0.22 + Math.random() * 0.12) : (0.18 + Math.random() * 0.1),
+    tilt: (Math.random() - 0.5) * 0.22
+  });
+}
+
+function spawnSparks(x, y, count){
+  for(let i = 0; i < count; i++){
+    if(sparks.length > 45) sparks.shift();
+    const a = -Math.PI * 0.15 - Math.random() * Math.PI * 0.75;
+    const sp = 35 + Math.random() * 80;
+    sparks.push({
+      x, y,
+      vx: Math.cos(a) * sp,
+      vy: Math.sin(a) * sp,
+      life: 0,
+      maxLife: 0.28 + Math.random() * 0.3,
+      size: 1.3 + Math.random() * 1.5
+    });
+  }
+}
+
+function spawnSmokeRing(x, y, isPod){
+  smokeRings.push({
+    x, y,
+    vx: isPod ? -46 : 4,
+    vy: isPod ? -24 : -42,
+    r: 4,
+    vr: isPod ? 22 : 16,
+    alpha: 0.45,
+    life: 0,
+    maxLife: 1.35,
+    color: isHookahMode() ? getHookah().color : (isPod ? getPod().color : '#e2e8f0')
+  });
+}
+
+function triggerPuffFX(isCrit){
+  puffBoost = 1;
+  if(isCrit) critBoost = 1;
+  if(phase !== 'smoke') return;
+
+  const pts = getEmitterPositions();
+  const pod = isPodMode();
+  const perCig = Math.max(1, Math.ceil((isCrit ? 10 : 5) / Math.max(1, pts.length)));
+
+  pts.forEach((pos, idx) => {
+    const burst = isCrit ? Math.max(3, perCig + 2) : perCig;
+    for(let i = 0; i < burst; i++){
+      spawnSmokePuff(pos.x, pos.y, pod, true);
+    }
+    if(!pod){
+      const fCount = isCrit ? Math.max(2, perCig) : Math.max(1, Math.ceil(perCig * 0.7));
+      for(let i = 0; i < fCount; i++){
+        spawnFlameTongue(pos.x, pos.y, true);
+      }
+      if(idx === 0 || isCrit){
+        spawnSparks(pos.x, pos.y, isCrit ? 6 : 3);
+      }
+    }
+    if(isCrit || (idx === 0 && Math.random() < 0.24)){
+      spawnSmokeRing(pos.x, pos.y, pod);
+    }
+  });
+}
+
+function drawCigaretteFlameBase(pos, nowSec){
+  const pulse = 0.85 + 0.15 * Math.sin(nowSec * 14);
+  const boost = Math.max(puffBoost, critBoost * 1.15, cigBurnout ? 0.82 : 0);
+  const radius = (8 + boost * 8) * pulse;
+
+  sctx.save();
+  sctx.globalCompositeOperation = 'lighter';
+
+  const halo = sctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, radius * 1.6);
+  halo.addColorStop(0.0,  `rgba(255, 239, 157, ${0.32 + boost * 0.2})`);
+  halo.addColorStop(0.45, `rgba(255, 105, 18,  ${0.16 + boost * 0.14})`);
+  halo.addColorStop(1.0,  'rgba(255, 40, 0, 0)');
+  sctx.fillStyle = halo;
+  sctx.beginPath();
+  sctx.arc(pos.x, pos.y, radius * 1.45, 0, Math.PI * 2);
+  sctx.fill();
+
+  const sway = Math.sin(nowSec * 10.5) * (1.5 + boost * 2.2);
+  const len = (7 + boost * 9) * (0.88 + 0.12 * Math.sin(nowSec * 7));
+  const wid = 2.8 + boost * 1.8;
+  const grad = sctx.createLinearGradient(pos.x, pos.y + 3, pos.x + sway, pos.y - len);
+  grad.addColorStop(0.0, 'rgba(255, 255, 221, 0.92)');
+  grad.addColorStop(0.34, 'rgba(255, 188, 54, 0.86)');
+  grad.addColorStop(0.78, 'rgba(244, 76, 13, 0.48)');
+  grad.addColorStop(1.0, 'rgba(244, 45, 8, 0)');
+
+  sctx.fillStyle = grad;
+  sctx.beginPath();
+  sctx.moveTo(pos.x - wid, pos.y + 2);
+  sctx.bezierCurveTo(pos.x - wid * 1.05, pos.y - len * .32, pos.x + sway - wid * .42, pos.y - len * .65, pos.x + sway, pos.y - len);
+  sctx.bezierCurveTo(pos.x + sway + wid * .52, pos.y - len * .62, pos.x + wid * 1.08, pos.y - len * .28, pos.x + wid, pos.y + 2);
+  sctx.closePath();
+  sctx.fill();
+
+  sctx.fillStyle = 'rgba(255,252,218,.76)';
+  sctx.beginPath();
+  sctx.ellipse(pos.x - .4, pos.y + 1, Math.max(1.2, wid * .42), Math.max(2.2, len * .28), 0, 0, Math.PI * 2);
+  sctx.fill();
+
+  sctx.restore();
+}
+
+function updateAndDrawSmoke(dt, nowSec){
+  sctx.clearRect(0, 0, canvasW, canvasH);
+
+  puffBoost = Math.max(0, puffBoost - dt * 2.8);
+  critBoost = Math.max(0, critBoost - dt * 2.2);
+  windPhase += dt * 1.5;
+
+  const pod = isPodMode();
+  const cigActive = !pod && phase === 'smoke';
+  const pts = getEmitterPositions();
+
+  const emitInterval = pod
+    ? (state.podJuice > 0 ? (puffBoost > 0.1 ? 0.045 : 0.16) : 0.45)
+    : (puffBoost > 0.1 ? 0.045 : 0.1);
+
+  if(pod || cigActive){
+    smokeTimer += dt;
+    if(smokeTimer >= emitInterval){
+      smokeTimer = 0;
+      pts.forEach(p => spawnSmokePuff(p.x, p.y, pod, puffBoost > 0.2));
+    }
+  }
+
+  if(cigActive){
+    const fInterval = puffBoost > 0.15 ? 0.05 : 0.12;
+    flameTimer += dt;
+    if(flameTimer >= fInterval){
+      flameTimer = 0;
+      pts.forEach(p => spawnFlameTongue(p.x, p.y - 2, puffBoost > 0.2));
+    }
+    pts.forEach(p => drawCigaretteFlameBase(p, nowSec));
+  }
+
+  // 1. Клубы дыма / пара
+  for(let i = particles.length - 1; i >= 0; i--){
+    const p = particles[i];
+    p.life += dt;
+    if(p.life >= p.maxLife){
+      particles.splice(i, 1);
+      continue;
+    }
+    const t = p.life / p.maxLife;
+    p.vx *= Math.pow(0.45, dt);
+    p.vy -= 6 * dt;
+
+    const gentleWave = Math.cos(nowSec * p.waveFreq + p.waveSeed) * (10 + t * 14);
+    const breeze = Math.sin(windPhase) * 6 * t;
+    p.x += (p.vx + gentleWave + breeze) * dt;
+    p.y += p.vy * dt;
+    p.size += p.grow * dt;
+    p.rot += p.vrot * dt;
+
+    const fadeIn = Math.min(1, t * 4.5);
+    const fadeOut = Math.pow(1 - t, 1.65);
+    const a = p.alpha * fadeIn * fadeOut;
+
+    sctx.save();
+    sctx.translate(p.x, p.y);
+    sctx.rotate(p.rot);
+    sctx.globalAlpha = a;
+    sctx.drawImage(puffSprite, -p.size, -p.size, p.size * 2, p.size * 2);
+
+    if(p.tint){
+      sctx.globalCompositeOperation = 'lighter';
+      sctx.globalAlpha = a * 0.24;
+      sctx.fillStyle = p.tint;
+      sctx.beginPath();
+      sctx.arc(0, 0, p.size * 0.55, 0, Math.PI * 2);
+      sctx.fill();
+    }
+    sctx.restore();
+  }
+
+  // 2. Взлетающие язычки пламени
+  for(let i = flames.length - 1; i >= 0; i--){
+    const f = flames[i];
+    f.life += dt;
+    if(f.life >= f.maxLife){
+      flames.splice(i, 1);
+      continue;
+    }
+    const t = f.life / f.maxLife;
+    f.x += (f.vx + Math.sin(nowSec * 18 + t * 8) * 18) * dt;
+    f.y += f.vy * dt;
+    f.w *= Math.pow(0.45, dt);
+    f.h *= (1 - 0.55 * dt);
+
+    const alpha = Math.sin(Math.min(1, t) * Math.PI) * 0.85;
+    sctx.save();
+    sctx.globalCompositeOperation = 'lighter';
+    sctx.translate(f.x, f.y);
+    sctx.rotate(f.tilt);
+    sctx.globalAlpha = Math.max(0, alpha);
+    sctx.drawImage(flameSprite, -f.w * 0.5, -f.h * 0.5, f.w, f.h);
+    sctx.restore();
+  }
+
+  // 3. Колечки дыма / пара
+  for(let i = smokeRings.length - 1; i >= 0; i--){
+    const r = smokeRings[i];
+    r.life += dt;
+    if(r.life >= r.maxLife){
+      smokeRings.splice(i, 1);
+      continue;
+    }
+    const t = r.life / r.maxLife;
+    r.x += (r.vx + Math.sin(nowSec * 2.5 + i) * 8) * dt;
+    r.y += r.vy * dt;
+    r.r += r.vr * dt;
+    const a = r.alpha * (1 - t);
+
+    sctx.save();
+    sctx.strokeStyle = r.color;
+    sctx.globalAlpha = a;
+    sctx.lineWidth = Math.max(1, 2.8 * (1 - t));
+    sctx.beginPath();
+    sctx.ellipse(r.x, r.y, r.r, r.r * 0.52, -0.2, 0, Math.PI * 2);
+    sctx.stroke();
+    sctx.restore();
+  }
+
+  // 4. Искры
+  for(let i = sparks.length - 1; i >= 0; i--){
+    const s = sparks[i];
+    s.life += dt;
+    if(s.life >= s.maxLife){
+      sparks.splice(i, 1);
+      continue;
+    }
+    const t = s.life / s.maxLife;
+    s.vy += 140 * dt;
+    s.x += s.vx * dt;
+    s.y += s.vy * dt;
+
+    sctx.save();
+    sctx.globalCompositeOperation = 'lighter';
+    sctx.globalAlpha = 1 - t;
+    sctx.fillStyle = t < 0.4 ? '#fff3b0' : '#ff6b00';
+    sctx.beginPath();
+    sctx.arc(s.x, s.y, s.size * (1 - t * 0.5), 0, Math.PI * 2);
+    sctx.fill();
+    sctx.restore();
+  }
+}
+
+/* =========================================================
+   ГЕОМЕТРИЯ И АНИМАЦИЯ СИГАРЕТЫ (ВЫБРОС + ДОСТАТЬ ИЗ ПАЧКИ)
+   ========================================================= */
+let wrapW       = 340;
+let filterW     = 84;
+let cigOffsetX  = 0;
+let cigOffsetY  = 0;
+let cigRotate   = 0;
+let cigScaleX   = 1;
+let cigScaleY   = 1;
+let cigOpacity  = 1;
+let cigBurnout  = false;
+let cigNoEmber  = false;
+let renderedCigCount = 0;
+
+function getVisualCigCount(){
+  return Math.min(8, Math.max(1, cigBatchSize()));
+}
+
+function syncCigElements(){
+  const count = getVisualCigCount();
+  const b = getBrand();
+  const compact = count >= 4;
+
+  if(renderedCigCount !== count){
+    cigStack.innerHTML = '';
+    for(let i = 0; i < count; i++){
+      const c = document.createElement('div');
+      c.className = 'cig brand-' + b.id + (compact ? ' compact' : '');
+      c.innerHTML = '<div class="filter"></div><div class="paper"></div><div class="ember"></div>';
+      cigStack.appendChild(c);
+    }
+    renderedCigCount = count;
+  }
+
+  const els = cigStack.querySelectorAll('.cig');
+  els.forEach((c, idx) => {
+    c.className = 'cig brand-' + b.id +
+      (compact ? ' compact' : '') +
+      (cigBurnout ? ' burnout' : '') +
+      (cigNoEmber ? ' no-ember' : '');
+    c.style.setProperty('--filter-w', (compact ? Math.round(filterW * 0.82) : filterW) + 'px');
+    c.style.zIndex = String(10 - idx);
+  });
+}
+
+function measure(){
+  wrapW   = cigWrap.clientWidth || 280;
+  filterW = Math.round(Math.min(92, Math.max(46, wrapW * 0.25)));
+  syncCigElements();
+  resizeSmokeCanvas();
+  renderVisuals();
+}
+
+function renderVisuals(){
+  syncCigElements();
+  const els = cigStack.querySelectorAll('.cig');
+  const count = els.length || 1;
+  const f = Math.max(0, Math.min(1, visualFrac));
+  const compact = count >= 4;
+  const effFilterW = compact ? Math.round(filterW * 0.82) : filterW;
+  const maxCigLen = wrapW * 0.78;
+  const w = effFilterW + f * (maxCigLen - effFilterW);
+
+  const mid = (count - 1) * 0.5;
+  const spreadY = count === 1 ? 0 : Math.min(10, 44 / count);
+  const fanDeg  = count === 1 ? 0 : Math.min(7.5, 22 / count);
+
+  els.forEach((c, idx) => {
+    const offsetIndex = idx - mid;
+    // Небольшая разница в догоривании между сигаретами в пачке
+    const stagger = count > 1 ? (idx * 0.03) : 0;
+    const localF = phase === 'smoke' ? Math.max(0.04, Math.min(1, f + stagger * (1 - f))) : f;
+    const localW = effFilterW + localF * (maxCigLen - effFilterW);
+
+    const fanY = offsetIndex * spreadY;
+    const fanX = Math.abs(offsetIndex) * (phase === 'pull' ? 6 : 2.5);
+    const fanR = offsetIndex * fanDeg;
+
+    // При выбросе окурки разлетаются веером
+    const flickFanR = phase === 'flick' ? offsetIndex * 9 : 0;
+    const flickFanY = phase === 'flick' ? offsetIndex * 11 : 0;
+
+    c.style.width = localW.toFixed(1) + 'px';
+    c.style.opacity = cigOpacity.toFixed(3);
+    c.style.transform =
+      `translateY(calc(-50% + ${(cigOffsetY + fanY + flickFanY).toFixed(1)}px)) ` +
+      `translateX(${(cigOffsetX + fanX).toFixed(1)}px) ` +
+      `rotate(${(cigRotate + fanR + flickFanR).toFixed(2)}deg) ` +
+      `scale(${cigScaleX.toFixed(3)}, ${cigScaleY.toFixed(3)})`;
+  });
+
+  const cap = podTankCap();
+  const juicePct = Math.max(0, Math.min(100, (state.podJuice / cap) * 100));
+  podJuiceBar.style.width = juicePct + '%';
+
+  const hCap = hookahCoalCap();
+  const coalPct = Math.max(0, Math.min(100, (state.hookahCoals / hCap) * 100));
+  hookahWaterBar.style.height = Math.max(12, coalPct) + '%';
+}
+
+/* =========================================================
+   ПОСТРОЕНИЕ ИНТЕРФЕЙСА
+   ========================================================= */
+let renderedShopMode = null;
+
+const getActiveModeKey = () => isHookahMode() ? 'hookahs' : (isPodMode() ? 'pods' : 'cigs');
+
+function buildShop(forceMode){
+  const mode = forceMode || getActiveModeKey();
+  renderedShopMode = mode;
+  shopList.innerHTML = '';
+
+  const items = mode === 'hookahs' ? HOOKAH_UPGRADES : (mode === 'pods' ? POD_UPGRADES : CIG_UPGRADES);
+  items.forEach(u => {
+    const el = document.createElement('div');
+    el.className = 'item' + (mode === 'hookahs' ? ' hookah-card' : (mode === 'pods' ? ' pod-card' : ''));
+
+    const icon = document.createElement('div');
+    icon.className = 'icon';
+    icon.textContent = u.icon;
+
+    const info = document.createElement('div');
+    info.className = 'info';
+    const nm = document.createElement('div');
+    nm.className = 'name';
+    nm.textContent = u.name;
+    const ds = document.createElement('div');
+    ds.className = 'desc';
+    info.appendChild(nm);
+    info.appendChild(ds);
+
+    const btn = document.createElement('button');
+    btn.className = 'buy' + (mode === 'hookahs' ? ' hookah-buy' : (mode === 'pods' ? ' pod-buy' : ''));
+    btn.addEventListener('click', () => buyUpgrade(u.id, mode));
+
+    el.appendChild(icon);
+    el.appendChild(info);
+    el.appendChild(btn);
+    shopList.appendChild(el);
+
+    if(mode === 'hookahs'){
+      hookahBuyBtns[u.id] = btn;
+      hookahDescEls[u.id] = ds;
+    } else if(mode === 'pods'){
+      podBuyBtns[u.id] = btn;
+      podDescEls[u.id] = ds;
+    } else {
+      cigBuyBtns[u.id] = btn;
+      cigDescEls[u.id] = ds;
+    }
+  });
+}
+
+function buildBrands(){
+  brandList.innerHTML = '';
+  BRANDS.forEach(b => {
+    const el = document.createElement('div');
+    el.className = 'item';
+
+    const icon = document.createElement('div');
+    icon.className = 'icon brand-preview';
+    icon.innerHTML =
+      '<div class="mini-cig brand-' + b.id + '">' +
+        '<i class="m-filter"></i><i class="m-paper"></i>' +
+      '</div>';
+
+    const info = document.createElement('div');
+    info.className = 'info';
+    const nm = document.createElement('div');
+    nm.className = 'name';
+    nm.textContent = b.name;
+    const ds = document.createElement('div');
+    ds.className = 'desc';
+    ds.textContent = `${b.value} 🪙 за ${b.time.toFixed(1)} с · ${(b.value/b.time).toFixed(1)}/сек`;
+    info.appendChild(nm);
+    info.appendChild(ds);
+
+    const btn = document.createElement('button');
+    btn.className = 'buy';
+    btn.addEventListener('click', () => handleBrand(b.id));
+
+    el.appendChild(icon);
+    el.appendChild(info);
+    el.appendChild(btn);
+    brandList.appendChild(el);
+
+    brandBtns[b.id]  = btn;
+    brandCards[b.id] = el;
+  });
+}
+
+function buildPods(){
+  podList.innerHTML = '';
+
+  const banner = document.createElement('div');
+  banner.className = 'level-banner';
+  banner.innerHTML =
+    '<div><b>Новый уровень: Подики</b><br><span style="color:var(--dim)">Своя валюта 💧 и прокачка с нуля! Следи за жижей и испарителем.</span></div>' +
+    '<button class="mode-switch" id="toggleModeBtn">Режим</button>';
+  podList.appendChild(banner);
+
+  document.getElementById('toggleModeBtn').addEventListener('click', () => {
+    if(!state.podsUnlocked) return;
+    switchMode(state.mode === 'pods' ? 'cigs' : 'pods');
+  });
+
+  PODS.forEach(p => {
+    const el = document.createElement('div');
+    el.className = 'item pod-card';
+
+    const icon = document.createElement('div');
+    icon.className = 'icon brand-preview';
+    icon.innerHTML =
+      `<div class="mini-pod m-${p.id}" style="--pod-c:${p.color};">` +
+        '<i class="mp-tip"></i><i class="mp-tank"></i><i class="mp-body"></i>' +
+      '</div>';
+
+    const info = document.createElement('div');
+    info.className = 'info';
+    const nm = document.createElement('div');
+    nm.className = 'name';
+    nm.textContent = p.name;
+    const ds = document.createElement('div');
+    ds.className = 'desc';
+    ds.textContent = `${p.watt} · ${fmt(p.value)} 💧 за ${p.time.toFixed(1)} с`;
+    info.appendChild(nm);
+    info.appendChild(ds);
+
+    const btn = document.createElement('button');
+    btn.className = 'buy pod-buy';
+    btn.addEventListener('click', () => handlePod(p.id));
+
+    el.appendChild(icon);
+    el.appendChild(info);
+    el.appendChild(btn);
+    podList.appendChild(el);
+
+    podBtns[p.id]  = btn;
+    podCards[p.id] = el;
+  });
+}
+
+function buildHookahs(){
+  hookahList.innerHTML = '';
+
+  const banner = document.createElement('div');
+  banner.className = 'level-banner';
+  banner.style.borderColor = '#7e22ce';
+  banner.style.background = 'linear-gradient(180deg,#271538,#190e24)';
+  banner.innerHTML =
+    '<div><b style="color:#e9d5ff">Новый уровень: Кальяны</b><br><span style="color:var(--dim)">Своя валюта 🫧 и прокачка с нуля! Следи за углями и чашей.</span></div>' +
+    '<button class="mode-switch" id="toggleHookahModeBtn" style="border-color:#c084fc;background:#3b0764;color:#f3e8ff;">Режим</button>';
+  hookahList.appendChild(banner);
+
+  document.getElementById('toggleHookahModeBtn').addEventListener('click', () => {
+    if(!state.hookahsUnlocked) return;
+    switchMode(state.mode === 'hookahs' ? 'pods' : 'hookahs');
+  });
+
+  HOOKAHS.forEach(h => {
+    const el = document.createElement('div');
+    el.className = 'item hookah-card';
+
+    const icon = document.createElement('div');
+    icon.className = 'icon brand-preview';
+    icon.innerHTML =
+      `<div class="mini-hookah m-${h.id}" style="--hookah-c:${h.color};">` +
+        '<i class="mh-bowl"></i><i class="mh-tray"></i><i class="mh-stem"></i><i class="mh-base"></i>' +
+      '</div>';
+
+    const info = document.createElement('div');
+    info.className = 'info';
+    const nm = document.createElement('div');
+    nm.className = 'name';
+    nm.textContent = h.name;
+    const ds = document.createElement('div');
+    ds.className = 'desc';
+    ds.textContent = `${h.tag} · ${fmt(h.value)} 🫧 за ${h.time.toFixed(1)} с`;
+    info.appendChild(nm);
+    info.appendChild(ds);
+
+    const btn = document.createElement('button');
+    btn.className = 'buy hookah-buy';
+    btn.addEventListener('click', () => handleHookah(h.id));
+
+    el.appendChild(icon);
+    el.appendChild(info);
+    el.appendChild(btn);
+    hookahList.appendChild(el);
+
+    hookahBtns[h.id]  = btn;
+    hookahCards[h.id] = el;
+  });
+}
+
+function buildAchievements(){
+  achList.innerHTML = '';
+
+  const head = document.createElement('div');
+  head.className = 'ach-head';
+  head.innerHTML = '<span>Открыто</span><b id="achCounter">0 / 0</b>';
+  achList.appendChild(head);
+
+  ACHIEVEMENTS.forEach(a => {
+    const el = document.createElement('div');
+    el.className = 'item ach';
+
+    const icon = document.createElement('div');
+    icon.className = 'icon';
+    icon.textContent = a.icon;
+
+    const info = document.createElement('div');
+    info.className = 'info';
+    const nm = document.createElement('div');
+    nm.className = 'name';
+    nm.textContent = a.name;
+    const ds = document.createElement('div');
+    ds.className = 'desc';
+    ds.innerHTML = a.desc + ' · <span class="ach-reward">+' + fmt(a.reward) + ' 🪙</span>';
+    info.appendChild(nm);
+    info.appendChild(ds);
+
+    const st = document.createElement('div');
+    st.className = 'ach-status';
+    st.textContent = '🔒';
+
+    el.appendChild(icon);
+    el.appendChild(info);
+    el.appendChild(st);
+    achList.appendChild(el);
+
+    achCards[a.id]  = el;
+    achStatus[a.id] = st;
+  });
+}
+
+/* =========================================================
+   СКИНЫ И ПЕРЕКЛЮЧЕНИЕ УРОВНЯ
+   ========================================================= */
+function applySkins(){
+  const b = getBrand();
+  packBrandLabel.textContent = b.name.toUpperCase();
+  syncCigElements();
+
+  const p = getPod();
+  podEl.className = 'pod-rig model-' + p.id;
+  podEl.style.setProperty('--pod-color', p.color);
+  podScreenEl.innerHTML = p.watt.replace(' · ', '<br>');
+}
+
+function applyHookahSkin(){
+  const h = getHookah();
+  hookahEl.className = 'hookah-rig model-' + h.id;
+  hookahEl.style.setProperty('--hookah-color', h.color);
+}
+
+function applyModeVisual(){
+  const hookahActive = isHookahMode();
+  const podActive = !hookahActive && isPodMode();
+  tapArea.classList.toggle('hookah-mode', hookahActive);
+  tapArea.classList.toggle('pod-mode', podActive);
+
+  if(hookahActive){
+    sceneLabelEl.textContent = 'КАЛЬЯННАЯ СЕССИЯ';
+    coinsLabelEl.textContent  = 'Дым-койны';
+    smokedLabelEl.textContent = 'Тяг';
+    hintEl.textContent = state.hookahCoals > 0
+      ? `${getHookah().name} · Углей в запасе ${state.hookahCoals.toFixed(1)} / ${hookahCoalCap()} шт 🫧`
+      : '⚠️ Угли прогорели! Досыпь угли в разделе «Улучшения» (доход ×0.2)';
+  } else if(podActive){
+    sceneLabelEl.textContent = 'ПАРОВОЙ ЦИКЛ';
+    coinsLabelEl.textContent  = 'Пар-койны';
+    smokedLabelEl.textContent = 'Затяжек';
+    hintEl.textContent = state.podJuice > 0
+      ? `${getPod().name} · В баке ${state.podJuice.toFixed(1)} / ${podTankCap()} мл жижи 💨`
+      : '⚠️ Бак пустой! Купи жижу в разделе «Улучшения» (доход ×0.2)';
+  } else {
+    sceneLabelEl.textContent = 'СИГАРЕТНЫЙ ЦИКЛ';
+    coinsLabelEl.textContent  = 'Монеты';
+    smokedLabelEl.textContent = 'Выкурено';
+    const cnt = cigBatchSize();
+    hintEl.textContent = cnt > 1
+      ? `Куришь сразу ${cnt} сигарет за цикл — окурки выбрасываются, новые достаются из пачки 🚬`
+      : 'Тапай по сигарете — окурок выбрасывается, а новая достаётся из пачки 🚬';
+  }
+}
+
+function switchMode(newMode){
+  if(newMode === 'pods' && !state.podsUnlocked) return;
+  if(newMode === 'hookahs' && !state.hookahsUnlocked) return;
+  state.mode = newMode;
+  progress = 0;
+  autoAcc = 0;
+  phase = 'smoke';
+  phaseTime = 0;
+  visualFrac = 1;
+  cigOffsetX = 0;
+  cigOffsetY = 0;
+  cigRotate = 0;
+  cigScaleX = 1;
+  cigScaleY = 1;
+  cigOpacity = 1;
+  packProp.classList.remove('visible');
+  particles.length = 0;
+  flames.length = 0;
+  smokeRings.length = 0;
+  sparks.length = 0;
+  cigBurnout = false;
+  cigNoEmber = false;
+  buildShop(newMode);
+  applyModeVisual();
+  applySkins();
+  applyHookahSkin();
+  updateUI();
+  save();
+}
+
+function checkPodLevelUnlock(){
+  if(!state.podsUnlocked && state.owned.length >= BRANDS.length){
+    state.podsUnlocked = true;
+    state.podCoins = 0;
+    state.podJuice = 30;
+    switchMode('pods');
+    showToast({
+      icon: '💨',
+      name: 'Новый уровень: Подики!',
+      desc: 'Новая прокачка с нуля: жижа, испарители и модели подиков!',
+      reward: 0
+    });
+  }
+}
+
+function checkHookahLevelUnlock(){
+  if(!state.hookahsUnlocked && state.ownedPods.length >= PODS.length){
+    state.hookahsUnlocked = true;
+    state.hookahCoins = 0;
+    state.hookahCoals = 25;
+    switchMode('hookahs');
+    showToast({
+      icon: '🫧',
+      name: 'Новый уровень: Кальяны!',
+      desc: 'Новая прокачка с нуля: угли, чаши и модели кальянов!',
+      reward: 0
+    });
+  }
+}
+
+/* =========================================================
+   ПОКУПКИ
+   ========================================================= */
+function buyUpgrade(id, mode){
+  const list = mode === 'hookahs' ? HOOKAH_UPGRADES : (mode === 'pods' ? POD_UPGRADES : CIG_UPGRADES);
+  const u = list.find(x => x.id === id);
+  if(!u) return;
+
+  if(u.customBuy){
+    if(u.customBuy()){
+      buzz(12);
+      updateUI();
+      save();
+    }
+    return;
+  }
+
+  const lvl = state[id] || 0;
+  if(u.max && lvl >= u.max) return;
+
+  const cost = u.cost(lvl);
+  if(mode === 'hookahs'){
+    if(state.hookahCoins < cost) return;
+    state.hookahCoins -= cost;
+  } else if(mode === 'pods'){
+    if(state.podCoins < cost) return;
+    state.podCoins -= cost;
+  } else {
+    if(state.coins < cost) return;
+    state.coins -= cost;
+  }
+
+  state[id] = lvl + 1;
+  buzz(12);
+  awardXp(8 + lvl * 2);
+  updateUI();
+  save();
+}
+
+function handleBrand(id){
+  const b = BRANDS.find(x => x.id === id);
+  const owned = state.owned.includes(id);
+
+  if(!owned){
+    const price = brandPrice(b);
+    if(state.coins < price) return;
+    state.coins -= price;
+    state.owned.push(id);
+    state.brand = id;
+    awardXp(20);
+    buzz(15);
+    if(state.owned.length >= BRANDS.length){
+      checkPodLevelUnlock();
+      return;
+    }
+  } else {
+    state.brand = id;
+  }
+
+  if(isPodMode()){
+    switchMode('cigs');
+  } else {
+    applyModeVisual();
+    applySkins();
+    updateUI();
+    save();
+  }
+}
+
+function handlePod(id){
+  if(!state.podsUnlocked) return;
+  const p = PODS.find(x => x.id === id);
+  const owned = state.ownedPods.includes(id);
+
+  if(!owned){
+    const price = podPrice(p);
+    if(state.podCoins < price) return;
+    state.podCoins -= price;
+    state.ownedPods.push(id);
+    state.pod = id;
+    awardXp(35);
+    buzz(15);
+  } else {
+    state.pod = id;
+  }
+
+  if(!isPodMode()){
+    switchMode('pods');
+  } else {
+    applyModeVisual();
+    applySkins();
+    updateUI();
+    save();
+  }
+}
+
+function handleHookah(id){
+  if(!state.hookahsUnlocked) return;
+  const h = HOOKAHS.find(x => x.id === id);
+  const owned = state.ownedHookahs.includes(id);
+
+  if(!owned){
+    const price = h.price;
+    if(state.hookahCoins < price) return;
+    state.hookahCoins -= price;
+    state.ownedHookahs.push(id);
+    state.hookah = id;
+    awardXp(45);
+    buzz(15);
+  } else {
+    state.hookah = id;
+  }
+
+  if(!isHookahMode()){
+    switchMode('hookahs');
+  } else {
+    applyModeVisual();
+    applyHookahSkin();
+    updateUI();
+    save();
+  }
+}
+
+/* =========================================================
+   ДОСТИЖЕНИЯ
+   ========================================================= */
+function checkAchievements(){
+  for(const a of ACHIEVEMENTS){
+    if(state.ach.includes(a.id)) continue;
+    let ok = false;
+    try{ ok = a.check(state); }catch(e){ ok = false; }
+    if(!ok) continue;
+
+    state.ach.push(a.id);
+    state.coins += a.reward;
+    state.totalEarned += a.reward;
+    showToast(a);
+    buzz(25);
+    save();
+  }
+}
+
+function showToast(a){
+  const t = document.createElement('div');
+  t.className = 'toast';
+  const rewardTxt = a.reward > 0 ? ' · +' + fmt(a.reward) + ' 🪙' : '';
+  t.innerHTML =
+    '<div class="t-icon">' + a.icon + '</div>' +
+    '<div><div class="t-name">🏆 ' + a.name + '</div>' +
+    '<div class="t-desc">' + a.desc + rewardTxt + '</div></div>';
+  toastsEl.appendChild(t);
+
+  setTimeout(() => {
+    t.classList.add('out');
+    setTimeout(() => t.remove(), 320);
+  }, 2600);
+}
+
+/* =========================================================
+   АНИМАЦИЯ ЦИКЛА: ВЫБРОС ОКУРКА + ДОСТАТЬ НОВУЮ ИЗ ПАЧКИ
+   ========================================================= */
+let progress   = 0;
+let autoAcc    = 0;
+let lastTime   = performance.now();
+let uiAcc      = 0;
+// Фазы: 'smoke' -> 'flick' (выбрасываем окурок) -> 'pull' (достаём новую из пачки)
+let phase      = 'smoke';
+let phaseTime  = 0;
+let visualFrac = 1;
+
+const FLICK_TIME = 0.85;
+const PULL_TIME  = 1.05;
+const LERP_SMOKE = 24;
+
+function easeInOutQuad(t){
+  return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+}
+function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
+function easeOutQuint(t){ return 1 - Math.pow(1 - t, 5); }
+
+function startFlickOut(){
+  if(phase !== 'smoke') return;
+  phase = 'flick';
+  phaseTime = 0;
+  cigBurnout = true;
+  cigNoEmber = true;
+}
+
+function completeCycle(){
+  if(isHookahMode()){
+    if(state.hookahCoals > 0){
+      state.hookahCoals = Math.max(0, state.hookahCoals - 1);
+    }
+    let gain = hookahBaseCycle();
+    let isCrit = false;
+    if(Math.random() < hookahCritChance()){
+      gain *= CRIT_MUL;
+      isCrit = true;
+      buzz(20);
+    }
+    state.hookahCoins += gain;
+    state.hookahPuffs += 1;
+    awardXp(isCrit ? 12 : 4);
+    triggerPuffFX(isCrit);
+    popup(isCrit ? 'КРИТ! +' + fmt(gain) + ' 🫧' : '+' + fmt(gain) + ' 🫧', isCrit);
+    if(!isCrit) buzz(6);
+  } else if(isPodMode()){
+    if(state.podJuice > 0){
+      state.podJuice = Math.max(0, state.podJuice - 1);
+    }
+    let gain = podBaseCycle();
+    let isCrit = false;
+    if(Math.random() < podCritChance()){
+      gain *= CRIT_MUL;
+      isCrit = true;
+      buzz(20);
+    }
+    state.podCoins += gain;
+    state.podPuffs += 1;
+    awardXp(isCrit ? 10 : 3);
+    triggerPuffFX(isCrit);
+    popup(isCrit ? 'КРИТ! +' + fmt(gain) + ' 💧' : '+' + fmt(gain) + ' 💧', isCrit);
+    if(!isCrit) buzz(6);
+  } else {
+    let gain = cigBaseCycle();
+    let isCrit = false;
+    if(Math.random() < cigCritChance()){
+      gain *= CRIT_MUL;
+      isCrit = true;
+      state.crits++;
+      buzz(20);
+    }
+    state.coins += gain;
+    state.totalEarned += gain;
+    state.smoked += cigBatchSize();
+    awardXp((isCrit ? 9 : 3) * cigBatchSize());
+    triggerPuffFX(isCrit);
+    popup(isCrit ? 'КРИТ! +' + fmt(gain) : '+' + fmt(gain), isCrit);
+    if(!isCrit) buzz(6);
+    startFlickOut();
+  }
+}
+
+function advanceCycles(){
+  let guard = 0;
+  while(progress >= 1 && guard < 50){
+    progress -= 1;
+    completeCycle();
+    if(!isPodMode() && phase === 'flick') break;
+    guard++;
+  }
+}
+
+function popup(text, crit){
+  const el = document.createElement('div');
+  el.className = 'pop' + (crit ? ' crit' : '');
+  el.textContent = text;
+  el.style.left = (24 + Math.random() * 50) + '%';
+  tapArea.appendChild(el);
+  setTimeout(() => el.remove(), 950);
+}
+
+/* =========================================================
+   ИГРОВОЙ ЦИКЛ
+   ========================================================= */
+function loop(now){
+  let dt = (now - lastTime) / 1000;
+  lastTime = now;
+  if(dt > 0.5) dt = 0.5;
+  if(dt < 0) dt = 0;
+
+  const hookahActive = isHookahMode();
+  const podActive = !hookahActive && isPodMode();
+  const curCycleTime = hookahActive ? hookahCycleTime() : (podActive ? podCycleTime() : cigCycleTime());
+
+  if(hookahActive || podActive){
+    progress += dt / curCycleTime;
+    if(progress >= 1) advanceCycles();
+    const target = Math.max(0, 1 - progress);
+    visualFrac += (target - visualFrac) * Math.min(1, dt * LERP_SMOKE);
+    cigOffsetX = 0;
+    cigOffsetY = 0;
+    cigRotate = 0;
+    cigScaleX = 1;
+    cigScaleY = 1;
+    cigOpacity = 1;
+    packProp.classList.remove('visible');
+
+  } else if(phase === 'smoke'){
+    progress += dt / curCycleTime;
+    if(progress >= 1) advanceCycles();
+
+    if(phase === 'smoke'){
+      const target = Math.max(0, 1 - progress);
+      visualFrac += (target - visualFrac) * Math.min(1, dt * LERP_SMOKE);
+      if(Math.abs(target - visualFrac) < 0.0015) visualFrac = target;
+      cigOffsetX = 0;
+      cigOffsetY = 0;
+      cigRotate = 0;
+      cigScaleX = 1;
+      cigScaleY = 1;
+      cigOpacity = 1;
+      packProp.classList.remove('visible');
+    }
+
+  } else if(phase === 'flick'){
+    // Медленный и наглядный выброс окурка вперёд-вверх с параболической дугой и вращением
+    phaseTime += dt;
+    const t = Math.min(1, phaseTime / FLICK_TIME);
+    const moveE = easeOutCubic(t);
+    const arcY = -Math.sin(t * Math.PI) * 26 + Math.pow(t, 1.8) * 34;
+
+    visualFrac = 0.08;
+    cigOffsetX = moveE * (wrapW * 0.72);
+    cigOffsetY = arcY;
+    cigRotate = moveE * 54;
+    cigScaleX = 1 - t * 0.12;
+    cigScaleY = 1 - t * 0.08;
+    cigOpacity = t < 0.72 ? 1 : Math.max(0, 1 - (t - 0.72) / 0.28);
+    packProp.classList.toggle('visible', t >= 0.42);
+
+    if(t >= 1){
+      phase = 'pull';
+      phaseTime = 0;
+      visualFrac = 1;
+      cigBurnout = false;
+      cigNoEmber = true;
+      const pullStartX = Math.max(68, wrapW * 0.48);
+      cigOffsetX = pullStartX;
+      cigOffsetY = -4;
+      cigRotate = -2;
+      cigScaleX = 1;
+      cigScaleY = 1;
+      cigOpacity = 0.15;
+      packProp.classList.add('visible');
+    }
+
+  } else if(phase === 'pull'){
+    // Плавное вытягивание новой целой сигареты из пачки слева в рабочую позицию
+    phaseTime += dt;
+    const t = Math.min(1, phaseTime / cigPullTime());
+    const pullE = easeInOutQuad(t);
+    const pullStartX = Math.max(68, wrapW * 0.48);
+
+    visualFrac = 1;
+    cigOffsetX = pullStartX * (1 - pullE);
+    cigOffsetY = -4 * Math.sin(t * Math.PI);
+    cigRotate = -2 * (1 - pullE);
+    cigScaleX = 1;
+    cigScaleY = 1;
+    cigOpacity = Math.min(1, 0.15 + t * 2.2);
+    packProp.classList.toggle('visible', t < 0.82);
+
+    if(t >= 0.85){
+      cigNoEmber = false;
+    }
+
+    if(t >= 1){
+      phase = 'smoke';
+      phaseTime = 0;
+      cigOffsetX = 0;
+      cigOffsetY = 0;
+      cigRotate = 0;
+      cigScaleX = 1;
+      cigScaleY = 1;
+      cigOpacity = 1;
+      cigNoEmber = false;
+      cigBurnout = false;
+      packProp.classList.remove('visible');
+    }
+  }
+
+  renderVisuals();
+  updateAndDrawSmoke(dt, now / 1000);
+  fillEl.style.width = Math.min(100, progress * 100).toFixed(1) + '%';
+
+  if(hookahActive){
+    const ai = hookahAutoInc();
+    if(ai > 0){
+      autoAcc += ai * dt;
+      if(autoAcc >= 1){
+        const add = Math.floor(autoAcc);
+        autoAcc -= add;
+        state.hookahCoins += add;
+      }
+      state.hookahPuffs += hookahAutoRate() * dt;
+      if(state.hookahCoals > 0){
+        state.hookahCoals = Math.max(0, state.hookahCoals - hookahAutoRate() * 0.2 * dt);
+      }
+    }
+  } else if(podActive){
+    const ai = podAutoInc();
+    if(ai > 0){
+      autoAcc += ai * dt;
+      if(autoAcc >= 1){
+        const add = Math.floor(autoAcc);
+        autoAcc -= add;
+        state.podCoins += add;
+      }
+      state.podPuffs += podAutoRate() * dt;
+      if(state.podJuice > 0){
+        state.podJuice = Math.max(0, state.podJuice - podAutoRate() * 0.2 * dt);
+      }
+    }
+  } else {
+    const ai = cigAutoInc();
+    if(ai > 0){
+      autoAcc += ai * dt;
+      if(autoAcc >= 1){
+        const add = Math.floor(autoAcc);
+        autoAcc -= add;
+        state.coins += add;
+        state.totalEarned += add;
+      }
+      state.smoked += cigAutoRate() * dt;
+    }
+  }
+
+  uiAcc += dt;
+  if(uiAcc >= 0.08){
+    uiAcc = 0;
+    updateUI();
+  }
+
+  requestAnimationFrame(loop);
+}
+
+/* =========================================================
+   ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
+   ========================================================= */
+function updateUI(){
+  updateLevelUI();
+  if(!levelModal.classList.contains('hidden')) renderLevelMenu();
+  checkPodLevelUnlock();
+  checkHookahLevelUnlock();
+  checkAchievements();
+
+  const hookahActive = isHookahMode();
+  const podActive = !hookahActive && isPodMode();
+  const modeKey = hookahActive ? 'hookahs' : (podActive ? 'pods' : 'cigs');
+  if(renderedShopMode !== modeKey){
+    buildShop(modeKey);
+  }
+
+  applyModeVisual();
+
+  podsTab.classList.toggle('locked', !state.podsUnlocked);
+  podsTab.textContent = state.podsUnlocked ? '💨 Подики' : `💨 Подики (${state.owned.length}/${BRANDS.length})`;
+
+  hookahsTab.classList.toggle('locked', !state.hookahsUnlocked);
+  hookahsTab.textContent = state.hookahsUnlocked ? '🫧 Кальяны' : `🫧 Кальяны (${state.ownedPods.length}/${PODS.length})`;
+
+  const toggleBtn = document.getElementById('toggleModeBtn');
+  if(toggleBtn){
+    toggleBtn.textContent = podActive ? 'На сигареты 🚬' : 'На подики 💨';
+  }
+  const toggleHookahBtn = document.getElementById('toggleHookahModeBtn');
+  if(toggleHookahBtn){
+    toggleHookahBtn.textContent = hookahActive ? 'На подики 💨' : 'На кальяны 🫧';
+  }
+
+  if(hookahActive){
+    coinsEl.textContent  = fmt(state.hookahCoins) + ' 🫧';
+    smokedEl.textContent = fmt(Math.floor(state.hookahPuffs));
+    cpsEl.textContent    = fmtDec(hookahCps());
+  } else if(podActive){
+    coinsEl.textContent  = fmt(state.podCoins) + ' 💧';
+    smokedEl.textContent = fmt(Math.floor(state.podPuffs));
+    cpsEl.textContent    = fmtDec(podCps());
+  } else {
+    coinsEl.textContent  = fmt(state.coins);
+    smokedEl.textContent = fmt(Math.floor(state.smoked));
+    cpsEl.textContent    = fmtDec(cigCps());
+  }
+
+  const activeUpgrades = hookahActive ? HOOKAH_UPGRADES : (podActive ? POD_UPGRADES : CIG_UPGRADES);
+  const btnMap  = hookahActive ? hookahBuyBtns : (podActive ? podBuyBtns : cigBuyBtns);
+  const descMap = hookahActive ? hookahDescEls : (podActive ? podDescEls : cigDescEls);
+  const wallet  = hookahActive ? state.hookahCoins : (podActive ? state.podCoins : state.coins);
+  const unit    = hookahActive ? ' 🫧' : (podActive ? ' 💧' : ' 🪙');
+
+  activeUpgrades.forEach(u => {
+    const lvl = state[u.id] || 0;
+    const max = u.max || Infinity;
+    const btn = btnMap[u.id];
+    if(!btn) return;
+
+    if(u.customBuy){
+      const can = u.canAfford();
+      btn.textContent = u.btnText();
+      btn.disabled = !can;
+      btn.classList.remove('maxed');
+      btn.classList.toggle('shortage', hookahActive && !can);
+    } else if(lvl >= max){
+      btn.textContent = 'МАКС';
+      btn.disabled = true;
+      btn.classList.add('maxed');
+      btn.classList.remove('shortage');
+    } else {
+      const cost = u.cost(lvl);
+      const lacks = wallet < cost;
+      btn.textContent = fmt(cost) + unit;
+      btn.disabled = lacks;
+      btn.classList.remove('maxed');
+      btn.classList.toggle('shortage', hookahActive && lacks);
+    }
+    descMap[u.id].textContent = u.desc(lvl);
+  });
+
+  BRANDS.forEach(b => {
+    const owned = state.owned.includes(b.id);
+    const btn  = brandBtns[b.id];
+    const card = brandCards[b.id];
+
+    if(!owned){
+      const price = brandPrice(b);
+      btn.textContent = fmt(price) + ' 🪙';
+      btn.disabled = state.coins < price;
+      btn.classList.remove('maxed');
+      card.classList.remove('current');
+    } else if(!podActive && state.brand === b.id){
+      btn.textContent = '✓ Выбрано';
+      btn.disabled = true;
+      btn.classList.add('maxed');
+      card.classList.add('current');
+    } else {
+      btn.textContent = 'Выбрать';
+      btn.disabled = false;
+      btn.classList.remove('maxed');
+      card.classList.remove('current');
+    }
+  });
+
+  PODS.forEach(p => {
+    const owned = state.ownedPods.includes(p.id);
+    const btn  = podBtns[p.id];
+    const card = podCards[p.id];
+
+    if(!state.podsUnlocked){
+      btn.textContent = 'Закрыто';
+      btn.disabled = true;
+      btn.classList.remove('maxed');
+      card.classList.remove('current');
+    } else if(!owned){
+      const price = podPrice(p);
+      btn.textContent = fmt(price) + ' 💧';
+      btn.disabled = state.podCoins < price;
+      btn.classList.remove('maxed');
+      card.classList.remove('current');
+    } else if(podActive && state.pod === p.id){
+      btn.textContent = '✓ Выбрано';
+      btn.disabled = true;
+      btn.classList.add('maxed');
+      card.classList.add('current');
+    } else {
+      btn.textContent = 'Выбрать';
+      btn.disabled = false;
+      btn.classList.remove('maxed');
+      card.classList.remove('current');
+    }
+  });
+
+  HOOKAHS.forEach(h => {
+    const owned = state.ownedHookahs.includes(h.id);
+    const btn  = hookahBtns[h.id];
+    const card = hookahCards[h.id];
+    const notEnough = state.hookahCoins < h.price;
+
+    if(!state.hookahsUnlocked){
+      btn.textContent = 'Закрыто';
+      btn.disabled = true;
+      btn.classList.remove('maxed', 'shortage');
+      card.classList.remove('current', 'shortage');
+      card.style.opacity = '.75';
+    } else if(!owned){
+      btn.textContent = notEnough ? `Мало 🫧 · ${fmt(h.price)}` : `${fmt(h.price)} 🫧`;
+      btn.disabled = notEnough;
+      btn.classList.remove('maxed');
+      btn.classList.toggle('shortage', notEnough);
+      card.classList.remove('current');
+      card.classList.toggle('shortage', notEnough);
+      card.style.opacity = notEnough ? '.86' : '1';
+    } else if(hookahActive && state.hookah === h.id){
+      btn.textContent = '✓ Выбрано';
+      btn.disabled = true;
+      btn.classList.add('maxed');
+      btn.classList.remove('shortage');
+      card.classList.add('current');
+      card.classList.remove('shortage');
+      card.style.opacity = '1';
+    } else {
+      btn.textContent = 'Выбрать';
+      btn.disabled = false;
+      btn.classList.remove('maxed', 'shortage');
+      card.classList.remove('current', 'shortage');
+      card.style.opacity = '1';
+    }
+  });
+
+  let done = 0;
+  ACHIEVEMENTS.forEach(a => {
+    const unlocked = state.ach.includes(a.id);
+    if(unlocked) done++;
+    achCards[a.id].classList.toggle('done', unlocked);
+    achStatus[a.id].textContent = unlocked ? '✅' : '🔒';
+  });
+  const counter = document.getElementById('achCounter');
+  if(counter) counter.textContent = done + ' / ' + ACHIEVEMENTS.length;
+}
+
+levelOpenBtn.addEventListener('click', () => {
+  renderLevelMenu();
+  levelModal.classList.remove('hidden');
+  levelModal.setAttribute('aria-hidden', 'false');
+});
+levelCloseBtn.addEventListener('click', () => {
+  levelModal.classList.add('hidden');
+  levelModal.setAttribute('aria-hidden', 'true');
+});
+levelModal.addEventListener('click', e => {
+  if(e.target === levelModal) levelCloseBtn.click();
+});
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape' && !levelModal.classList.contains('hidden')) levelCloseBtn.click();
+});
+
+/* =========================================================
+   ТАП ПО СИГАРЕТЕ / ПОДИКУ
+   ========================================================= */
+profileOpenBtn.addEventListener('click', () => {
+  renderProfile();
+  profileModal.classList.remove('hidden');
+  profileModal.setAttribute('aria-hidden', 'false');
+});
+profileCloseBtn.addEventListener('click', () => {
+  profileModal.classList.add('hidden');
+  profileModal.setAttribute('aria-hidden', 'true');
+});
+profileModal.addEventListener('click', e => {
+  if(e.target === profileModal) profileCloseBtn.click();
+});
+profileSaveBtn.addEventListener('click', () => {
+  const name = profileNameInput.value.trim().replace(/\s+/g,' ').slice(0,24);
+  state.profileName = name || 'Игрок';
+  profileStatusEl.textContent = supabaseClient ? 'Сохраняю профиль…' : 'Профиль сохранён локально';
+  save();
+  renderProfile();
+  if(supabaseClient) syncRemoteProfile();
+});
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape' && !profileModal.classList.contains('hidden')) profileCloseBtn.click();
+});
+
+tapArea.addEventListener('pointerdown', e => {
+  e.preventDefault();
+
+  tapArea.classList.add('puff');
+  clearTimeout(tapArea._puffTimer);
+  tapArea._puffTimer = setTimeout(() => tapArea.classList.remove('puff'), 110);
+
+  if(phase === 'smoke'){
+    awardXp(1);
+    triggerPuffFX(false);
+    progress += isHookahMode() ? hookahTapProg() : (isPodMode() ? podTapProg() : cigTapProg());
+    if(progress >= 1) advanceCycles();
+  }
+
+  buzz(5);
+}, { passive:false });
+
+function buzz(ms){
+  if(navigator.vibrate){
+    try{ navigator.vibrate(ms); }catch(e){}
+  }
+}
+
+/* =========================================================
+   ТАБЫ
+   ========================================================= */
+const PANELS = { shop: shopList, brands: brandList, pods: podList, hookahs: hookahList, ach: achList };
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const key = tab.dataset.tab;
+    if(key === 'pods' && !state.podsUnlocked){
+      showToast({
+        icon: '🔒',
+        name: 'Подики ещё закрыты',
+        desc: `Открой все сигареты (${state.owned.length} из ${BRANDS.length})`,
+        reward: 0
+      });
+      return;
+    }
+    if(key === 'hookahs' && !state.hookahsUnlocked){
+      showToast({
+        icon: '🔒',
+        name: 'Кальяны ещё закрыты',
+        desc: `Собери все подики (${state.ownedPods.length} из ${PODS.length})`,
+        reward: 0
+      });
+      return;
+    }
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t === tab));
+    Object.keys(PANELS).forEach(k => PANELS[k].classList.toggle('hidden', k !== key));
+  });
+});
+
+/* =========================================================
+   СБРОС
+   ========================================================= */
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if(confirm('Точно сбросить весь прогресс?')){
+    state = JSON.parse(JSON.stringify(DEFAULT_STATE));
+    progress = 0;
+    autoAcc = 0;
+    phase = 'smoke';
+    phaseTime = 0;
+    visualFrac = 1;
+    cigOffsetX = 0;
+    cigOffsetY = 0;
+    cigRotate = 0;
+    cigScaleX = 1;
+    cigScaleY = 1;
+    cigOpacity = 1;
+    packProp.classList.remove('visible');
+    particles.length = 0;
+    flames.length = 0;
+    smokeRings.length = 0;
+    sparks.length = 0;
+    cigBurnout = false;
+  cigNoEmber = false;
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === 'shop'));
+    Object.keys(PANELS).forEach(k => PANELS[k].classList.toggle('hidden', k !== 'shop'));
+    buildShop('cigs');
+    applyModeVisual();
+    applySkins();
+    applyHookahSkin();
+    measure();
+    save();
+    updateUI();
+  }
+});
+
+/* =========================================================
+   РАЗМЕРЫ ЭКРАНА
+   ========================================================= */
+window.addEventListener('resize', measure);
+window.addEventListener('orientationchange', () => setTimeout(measure, 220));
+
+/* =========================================================
+   СОХРАНЕНИЕ
+   ========================================================= */
+setInterval(save, 3000);
+document.addEventListener('visibilitychange', () => { if(document.hidden) save(); });
+window.addEventListener('beforeunload', save);
+
+/* =========================================================
+   СТАРТ
+   ========================================================= */
+buildShop();
+buildBrands();
+buildPods();
+buildHookahs();
+buildAchievements();
+applyModeVisual();
+applySkins();
+applyHookahSkin();
+measure();
+updateUI();
+requestAnimationFrame(loop);
+initSupabase();
+</script>
+</body>
+</html>
